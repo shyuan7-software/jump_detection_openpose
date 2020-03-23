@@ -13,13 +13,14 @@ import shutil
 import cv2
 import sys
 
-
 # X = [0, 3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42, 45, 48, 51, 54, 57, 60, 63, 66, 69, 72, 75, 78, 81, 84, 87]
 # Y = [0, 3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42, 45, 48, 51, 54, 57, 60, 63, 66, 69, 72, 75, 78, 81, 84, 87]
 
 # video_path = 'mini_dataset/clips/test/jump/jump4.mp4'
 # landmark_path = 'mini_dataset/landmarks/test/jump/jump4.mp4'
 # model_path = 'video_track_best.h5'
+
+plt.switch_backend("agg")
 
 
 def generate_clips_tracks(video_path, landmark_path, num_image):
@@ -48,6 +49,7 @@ def generate_clips_tracks(video_path, landmark_path, num_image):
                        (frame_rate * 3) // num_image):
             cur_clip.append(image_per_frame[i])
             cur_track.append(decode_json(landmark_per_frame[i]))
+            if len(cur_clip) == num_image: break
         while len(cur_clip) < num_image:
             cur_clip.append(empty_img)
             cur_track.append(empty_landmark)
@@ -93,8 +95,8 @@ def generate_figure(video_path, landmark_path, model_path, num_image):
 # video_path: where is your video?
 # landmark_path: where is the video's corresponding landmark directory?
 if __name__ == '__main__':
-    v_path = sys.argv[1]#'sample/no_jump.mp4'
-    l_path = sys.argv[2]#'sample/no_jump'
+    v_path = sys.argv[1]  # 'sample/no_jump.mp4'
+    l_path = sys.argv[2]  # 'sample/no_jump'
     generate_figure(video_path=v_path, landmark_path=l_path,
                     model_path='video_track_model/Dense128-32_GRU32_CNN16-32-32_GRU16_16batch_10image_50epoch_best.h5',
                     num_image=10)
