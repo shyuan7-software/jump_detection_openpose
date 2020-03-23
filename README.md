@@ -11,7 +11,7 @@ This python file is to load trained model and test dataset, and then evaluate th
 ### 4. generate_figure.py:
 This python file is the main function of this project, this file has two input:
 a video, and a directory that stores landmark files. This file will output a json file and a figure, as follows:  
-[image](https://github.com/shyuan7-software/images/blob/master/generate_figure_result.png)  
+[logo]: https://github.com/shyuan7-software/images/blob/master/generate_figure_result.png
 
 ## Directory:
 ### 1. ./video_track_model/:
