@@ -29,6 +29,6 @@ The dataset is too large to be uploaded to github, please access it through:
 [10image](https://drive.google.com/drive/folders/1V6PB5sE8K8jLW1UnnoBPDZVhQO-tLXAh)
 
 ### 4. ./sample/ (not in github):
-This is for test purpose, under this directory, there are 6 videos (I shoot myself jumping) and their landmarks, you can easily
+This is for test purpose, under this directory, there are 6 videos (I shoot myself jumping) and their landmark files, you can easily
 test my code with this directory.  
 [sample](https://drive.google.com/drive/folders/1St1RiO6kB9MlPiOF6ItiIuPoCYV1uahQ?usp=sharing)
