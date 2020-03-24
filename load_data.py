@@ -49,7 +49,7 @@ def video_to_landmarks(landmark_path, num_image):
     frame_num = len(json_names)
     if frame_num == 0:
         return [], False
-    sample_rate = frame_num // num_image
+    sample_rate = math.ceil(frame_num / num_image)
     if sample_rate == 0:
         sample_rate += 1
     for frame_id in range(frame_num):
@@ -84,7 +84,7 @@ def video_to_imgaes(video_path, num_image):
         print(video_path)
         return [], False
     frame_num = video.get(7)
-    sample_rate = frame_num // num_image
+    sample_rate = math.ceil(frame_num / num_image)
     if sample_rate == 0:
         sample_rate += 1
     images = []
@@ -115,6 +115,7 @@ def load_videos_tracks(videos_dir, landmark_dir, num_image):
     body_tracks = []
     labels = []
     for file in dirs:
+        print(videos_dir + file)
         video, res1 = video_to_imgaes(videos_dir + file, num_image)
         body_track, res2 = video_to_landmarks(landmark_dir + file, num_image)
         if not res1 or not res2:
@@ -198,3 +199,21 @@ print(test_videos.shape)
 print(test_tracks.shape)
 print(test_lables.shape)
 '''
+(train_videos, train_tracks, train_lables), (valid_videos, valid_tracks, valid_lables), (
+test_videos, test_tracks, test_lables) \
+    = load_dataset(video_dir="dataset/clips/", landmark_dir="dataset/landmarks/", num_image=30)
+
+np.save("30image/train_videos_30image", train_videos)
+np.save("30image/train_tracks_30image", train_tracks)
+np.save("30image/train_lables_30image", train_lables)
+print(train_videos.shape, train_tracks.shape, train_lables.shape)
+
+np.save("30image/valid_videos_30image", valid_videos)
+np.save("30image/valid_tracks_30image", valid_tracks)
+np.save("30image/valid_lables_30image", valid_lables)
+print(valid_videos.shape, valid_tracks.shape, valid_lables.shape)
+
+np.save("30image/test_videos_30image", test_videos)
+np.save("30image/test_tracks_30image", test_tracks)
+np.save("30image/test_lables_30image", test_lables)
+print(test_videos.shape, test_tracks.shape, test_lables.shape)
