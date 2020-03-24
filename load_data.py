@@ -56,7 +56,7 @@ def video_to_landmarks(landmark_path, num_image):
         if len(landmarks) == num_image:
             break
         if frame_id % sample_rate == 0:
-            # print(json_names[frame_id])
+            # print(frame_id)
             landmarks.append(decode_json(landmark_path + json_names[frame_id]))
     empty_landmark = [[0, 0, 0]] * 25
     while len(landmarks) < num_image:
@@ -200,7 +200,7 @@ print(test_tracks.shape)
 print(test_lables.shape)
 '''
 (train_videos, train_tracks, train_lables), (valid_videos, valid_tracks, valid_lables), (
-test_videos, test_tracks, test_lables) \
+    test_videos, test_tracks, test_lables) \
     = load_dataset(video_dir="dataset/clips/", landmark_dir="dataset/landmarks/", num_image=30)
 
 np.save("30image/train_videos_30image", train_videos)
