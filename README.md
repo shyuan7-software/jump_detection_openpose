@@ -16,7 +16,7 @@ a video, and a directory that stores landmark files. This file will output a jso
 ## Directory:
 ### 1. ./video_track_model/:
 This directory stores the output from train_model.py when training.  
-Under this directory, _best.h5 file is the best model I can train.
+Under this directory, Dense128-32_GRU32_CNN16-32-32_GRU16_16batch_10image_50epoch_best.h5 file is the best trained model I can get.
 
 ### 2. ./dataset/ (not in github):
 This directory stores all the dataset in forms of clips and landmark json files  

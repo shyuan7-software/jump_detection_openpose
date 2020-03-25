@@ -199,7 +199,7 @@ print(test_videos.shape)
 print(test_tracks.shape)
 print(test_lables.shape)
 '''
-(train_videos, train_tracks, train_lables), (valid_videos, valid_tracks, valid_lables), (
+'''(train_videos, train_tracks, train_lables), (valid_videos, valid_tracks, valid_lables), (
     test_videos, test_tracks, test_lables) \
     = load_dataset(video_dir="dataset/clips/", landmark_dir="dataset/landmarks/", num_image=30)
 
@@ -216,4 +216,4 @@ print(valid_videos.shape, valid_tracks.shape, valid_lables.shape)
 np.save("30image/test_videos_30image", test_videos)
 np.save("30image/test_tracks_30image", test_tracks)
 np.save("30image/test_lables_30image", test_lables)
-print(test_videos.shape, test_tracks.shape, test_lables.shape)
+print(test_videos.shape, test_tracks.shape, test_lables.shape)'''
