@@ -49,6 +49,7 @@ batch_size = 16
 epochs = 1
 dropout = 0.5
 RNN_size = 512
+window_size = num_image // 4
 # 1. prepare for data
 
 '''(train_videos, train_tracks, train_lables), (valid_videos, valid_tracks, valid_lables), (
@@ -111,7 +112,7 @@ x = GRU(RNN_size, return_sequences=True, dropout=0.2, recurrent_dropout=dropout)
 x = GRU(RNN_size, return_sequences=False, dropout=0.2, recurrent_dropout=dropout)(x)
 x = Dense(1, activation='sigmoid')(x)
 # 2.2 spatial_input
-spatial_input = Input(shape=(len(chain_seq), 2 * num_image), name='spatial_seq')
+spatial_input = Input(shape=(len(chain_seq), 2 * window_size), name='spatial_seq')
 y = GRU(RNN_size, return_sequences=True, dropout=0.2, recurrent_dropout=dropout)(spatial_input)
 y = GRU(RNN_size, return_sequences=True, dropout=0.2, recurrent_dropout=dropout)(y)
 y = GRU(RNN_size, return_sequences=False, dropout=0.2, recurrent_dropout=dropout)(y)

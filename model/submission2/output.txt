@@ -33,7 +33,7 @@ gru_4 (GRU)                     (None, 32, 128)      54144       temporal_lleg_s
 __________________________________________________________________________________________________
 gru_5 (GRU)                     (None, 32, 128)      54144       temporal_rleg_seq[0][0]          
 __________________________________________________________________________________________________
-spatial_seq (InputLayer)        (None, 37, 64)       0                                            
+spatial_seq (InputLayer)        (None, 37, 16)       0                                            
 __________________________________________________________________________________________________
 concatenate_1 (Concatenate)     (None, 32, 448)      0           gru_1[0][0]                      
                                                                  gru_2[0][0]                      
@@ -41,7 +41,7 @@ concatenate_1 (Concatenate)     (None, 32, 448)      0           gru_1[0][0]
                                                                  gru_4[0][0]                      
                                                                  gru_5[0][0]                      
 __________________________________________________________________________________________________
-gru_8 (GRU)                     (None, 37, 512)      886272      spatial_seq[0][0]                
+gru_8 (GRU)                     (None, 37, 512)      812544      spatial_seq[0][0]                
 __________________________________________________________________________________________________
 gru_6 (GRU)                     (None, 32, 512)      1476096     concatenate_1[0][0]              
 __________________________________________________________________________________________________
@@ -58,8 +58,8 @@ ________________________________________________________________________________
 weighted_sum_1 (WeightedSum)    (None, 1)            0           dense_1[0][0]                    
                                                                  dense_2[0][0]                    
 ==================================================================================================
-Total params: 7,235,778
-Trainable params: 7,235,778
+Total params: 7,162,050
+Trainable params: 7,162,050
 Non-trainable params: 0
 __________________________________________________________________________________________________
 WARNING:tensorflow:From /usr/local/lib/python3.6/dist-packages/keras/optimizers.py:793: The name tf.train.Optimizer is deprecated. Please use tf.compat.v1.train.Optimizer instead.
@@ -69,7 +69,7 @@ WARNING:tensorflow:From /usr/local/lib/python3.6/dist-packages/keras/backend/ten
 WARNING:tensorflow:From /tensorflow-1.15.2/python3.6/tensorflow_core/python/ops/nn_impl.py:183: where (from tensorflow.python.ops.array_ops) is deprecated and will be removed in a future version.
 Instructions for updating:
 Use tf.where in 2.0, which has the same broadcast rule as np.where
-./drive/My Drive/track_model/new_COMP_TWO_STREAM_GRU_3layer512_25*20.5dropout_64batch_32image_100epoch_noHMDB/
+./drive/My Drive/track_model/windowsize_COMP_TWO_STREAM_GRU_3layer512_25*20.5dropout_64batch_32image_100epoch_noHMDB/
 WARNING:tensorflow:From /usr/local/lib/python3.6/dist-packages/keras/backend/tensorflow_backend.py:1033: The name tf.assign_add is deprecated. Please use tf.compat.v1.assign_add instead.
 
 WARNING:tensorflow:From /usr/local/lib/python3.6/dist-packages/keras/backend/tensorflow_backend.py:1020: The name tf.assign is deprecated. Please use tf.compat.v1.assign instead.
@@ -88,206 +88,206 @@ WARNING:tensorflow:From /usr/local/lib/python3.6/dist-packages/keras/backend/ten
 
 WARNING:tensorflow:From /usr/local/lib/python3.6/dist-packages/keras/backend/tensorflow_backend.py:223: The name tf.variables_initializer is deprecated. Please use tf.compat.v1.variables_initializer instead.
 
- - 30s - loss: 0.6346 - acc: 0.6961 - val_loss: 0.8262 - val_acc: 0.6043
+ - 31s - loss: 0.6656 - acc: 0.6911 - val_loss: 0.7633 - val_acc: 0.6087
 Epoch 2/100
- - 16s - loss: 0.5252 - acc: 0.7794 - val_loss: 0.6995 - val_acc: 0.5957
+ - 16s - loss: 0.5260 - acc: 0.7657 - val_loss: 0.8601 - val_acc: 0.5391
 Epoch 3/100
- - 16s - loss: 0.4737 - acc: 0.7776 - val_loss: 0.6942 - val_acc: 0.6522
+ - 16s - loss: 0.5056 - acc: 0.7813 - val_loss: 0.6941 - val_acc: 0.6435
 Epoch 4/100
- - 16s - loss: 0.4889 - acc: 0.7838 - val_loss: 0.7013 - val_acc: 0.6130
+ - 16s - loss: 0.4714 - acc: 0.7794 - val_loss: 0.6419 - val_acc: 0.6652
 Epoch 5/100
- - 16s - loss: 0.4680 - acc: 0.7914 - val_loss: 0.8948 - val_acc: 0.6087
+ - 16s - loss: 0.4491 - acc: 0.8070 - val_loss: 0.7012 - val_acc: 0.6174
 Epoch 6/100
- - 15s - loss: 0.4497 - acc: 0.8108 - val_loss: 0.6026 - val_acc: 0.6870
+ - 16s - loss: 0.4586 - acc: 0.7951 - val_loss: 0.6636 - val_acc: 0.7174
 Epoch 7/100
- - 16s - loss: 0.4822 - acc: 0.7989 - val_loss: 0.6857 - val_acc: 0.6609
+ - 16s - loss: 0.4450 - acc: 0.8020 - val_loss: 0.6105 - val_acc: 0.7130
 Epoch 8/100
- - 15s - loss: 0.4498 - acc: 0.7945 - val_loss: 0.8532 - val_acc: 0.5826
+ - 16s - loss: 0.4367 - acc: 0.8001 - val_loss: 0.7207 - val_acc: 0.5870
 Epoch 9/100
- - 16s - loss: 0.4406 - acc: 0.7932 - val_loss: 0.6670 - val_acc: 0.6478
+ - 16s - loss: 0.4311 - acc: 0.8008 - val_loss: 0.6620 - val_acc: 0.6478
 Epoch 10/100
- - 16s - loss: 0.4241 - acc: 0.8045 - val_loss: 0.8220 - val_acc: 0.6304
+ - 16s - loss: 0.4126 - acc: 0.8164 - val_loss: 0.9111 - val_acc: 0.5783
 Epoch 11/100
- - 16s - loss: 0.4141 - acc: 0.8026 - val_loss: 0.9034 - val_acc: 0.6348
+ - 16s - loss: 0.3979 - acc: 0.8158 - val_loss: 0.9134 - val_acc: 0.5957
 Epoch 12/100
- - 16s - loss: 0.3828 - acc: 0.8333 - val_loss: 0.7055 - val_acc: 0.6217
+ - 16s - loss: 0.3934 - acc: 0.8308 - val_loss: 0.6091 - val_acc: 0.7522
 Epoch 13/100
- - 15s - loss: 0.3777 - acc: 0.8358 - val_loss: 0.6062 - val_acc: 0.7087
+ - 16s - loss: 0.3841 - acc: 0.8352 - val_loss: 0.6830 - val_acc: 0.6783
 Epoch 14/100
- - 15s - loss: 0.3680 - acc: 0.8440 - val_loss: 0.6746 - val_acc: 0.6435
+ - 16s - loss: 0.3791 - acc: 0.8352 - val_loss: 0.6844 - val_acc: 0.6913
 Epoch 15/100
- - 15s - loss: 0.3335 - acc: 0.8559 - val_loss: 0.9648 - val_acc: 0.6522
+ - 16s - loss: 0.3327 - acc: 0.8590 - val_loss: 0.7687 - val_acc: 0.6609
 Epoch 16/100
- - 15s - loss: 0.3589 - acc: 0.8528 - val_loss: 0.7030 - val_acc: 0.6870
+ - 16s - loss: 0.3404 - acc: 0.8678 - val_loss: 0.8491 - val_acc: 0.6348
 Epoch 17/100
- - 15s - loss: 0.3479 - acc: 0.8672 - val_loss: 0.7212 - val_acc: 0.6609
+ - 16s - loss: 0.3189 - acc: 0.8734 - val_loss: 0.5996 - val_acc: 0.6739
 Epoch 18/100
- - 16s - loss: 0.3478 - acc: 0.8596 - val_loss: 0.7645 - val_acc: 0.6696
+ - 16s - loss: 0.3110 - acc: 0.8709 - val_loss: 0.7027 - val_acc: 0.6826
 Epoch 19/100
- - 16s - loss: 0.3295 - acc: 0.8678 - val_loss: 0.6813 - val_acc: 0.6913
+ - 16s - loss: 0.2756 - acc: 0.8904 - val_loss: 0.5655 - val_acc: 0.7609
 Epoch 20/100
- - 15s - loss: 0.3212 - acc: 0.8803 - val_loss: 0.6346 - val_acc: 0.7043
+ - 16s - loss: 0.2620 - acc: 0.8916 - val_loss: 0.6530 - val_acc: 0.7565
 Epoch 21/100
- - 16s - loss: 0.3198 - acc: 0.8753 - val_loss: 0.6410 - val_acc: 0.6957
+ - 16s - loss: 0.2378 - acc: 0.9029 - val_loss: 0.5515 - val_acc: 0.7696
 Epoch 22/100
- - 16s - loss: 0.2893 - acc: 0.8954 - val_loss: 0.6523 - val_acc: 0.7391
+ - 16s - loss: 0.2278 - acc: 0.9066 - val_loss: 0.5469 - val_acc: 0.7435
 Epoch 23/100
- - 15s - loss: 0.2840 - acc: 0.8866 - val_loss: 0.7473 - val_acc: 0.6870
+ - 16s - loss: 0.2086 - acc: 0.9104 - val_loss: 0.5296 - val_acc: 0.7870
 Epoch 24/100
- - 16s - loss: 0.2889 - acc: 0.8897 - val_loss: 0.7125 - val_acc: 0.7043
+ - 16s - loss: 0.2086 - acc: 0.9104 - val_loss: 0.5030 - val_acc: 0.7783
 Epoch 25/100
- - 16s - loss: 0.2878 - acc: 0.8816 - val_loss: 0.6861 - val_acc: 0.7174
+ - 16s - loss: 0.2026 - acc: 0.9179 - val_loss: 0.5576 - val_acc: 0.7696
 Epoch 26/100
- - 16s - loss: 0.2562 - acc: 0.9073 - val_loss: 0.6513 - val_acc: 0.7087
+ - 16s - loss: 0.1962 - acc: 0.9279 - val_loss: 0.4877 - val_acc: 0.8391
 Epoch 27/100
- - 16s - loss: 0.2620 - acc: 0.9098 - val_loss: 0.5365 - val_acc: 0.7739
+ - 16s - loss: 0.1782 - acc: 0.9317 - val_loss: 0.4420 - val_acc: 0.8304
 Epoch 28/100
- - 16s - loss: 0.2503 - acc: 0.9029 - val_loss: 0.6177 - val_acc: 0.7957
+ - 16s - loss: 0.1713 - acc: 0.9398 - val_loss: 0.4302 - val_acc: 0.8565
 Epoch 29/100
- - 15s - loss: 0.2149 - acc: 0.9185 - val_loss: 0.5234 - val_acc: 0.7913
+ - 16s - loss: 0.1566 - acc: 0.9411 - val_loss: 0.3540 - val_acc: 0.8478
 Epoch 30/100
- - 16s - loss: 0.2063 - acc: 0.9211 - val_loss: 0.5862 - val_acc: 0.7652
+ - 17s - loss: 0.1470 - acc: 0.9536 - val_loss: 0.4335 - val_acc: 0.8391
 Epoch 31/100
- - 15s - loss: 0.1961 - acc: 0.9217 - val_loss: 0.4819 - val_acc: 0.8000
+ - 16s - loss: 0.1452 - acc: 0.9480 - val_loss: 0.3729 - val_acc: 0.8826
 Epoch 32/100
- - 16s - loss: 0.1748 - acc: 0.9361 - val_loss: 0.6089 - val_acc: 0.7522
+ - 16s - loss: 0.1460 - acc: 0.9461 - val_loss: 0.4452 - val_acc: 0.8348
 Epoch 33/100
- - 15s - loss: 0.1665 - acc: 0.9361 - val_loss: 0.4065 - val_acc: 0.8391
+ - 16s - loss: 0.1553 - acc: 0.9449 - val_loss: 0.3700 - val_acc: 0.8826
 Epoch 34/100
- - 16s - loss: 0.1686 - acc: 0.9355 - val_loss: 0.5611 - val_acc: 0.8000
+ - 16s - loss: 0.1394 - acc: 0.9499 - val_loss: 0.3905 - val_acc: 0.8609
 Epoch 35/100
- - 15s - loss: 0.1789 - acc: 0.9298 - val_loss: 0.4728 - val_acc: 0.8174
+ - 16s - loss: 0.1430 - acc: 0.9524 - val_loss: 0.3239 - val_acc: 0.9043
 Epoch 36/100
- - 15s - loss: 0.1567 - acc: 0.9442 - val_loss: 0.4702 - val_acc: 0.8000
+ - 16s - loss: 0.1168 - acc: 0.9574 - val_loss: 0.4226 - val_acc: 0.8652
 Epoch 37/100
- - 15s - loss: 0.1443 - acc: 0.9424 - val_loss: 0.4199 - val_acc: 0.8522
+ - 16s - loss: 0.1483 - acc: 0.9480 - val_loss: 0.3927 - val_acc: 0.8739
 Epoch 38/100
- - 15s - loss: 0.1535 - acc: 0.9398 - val_loss: 0.4994 - val_acc: 0.8130
+ - 16s - loss: 0.1184 - acc: 0.9618 - val_loss: 0.4988 - val_acc: 0.8174
 Epoch 39/100
- - 16s - loss: 0.1474 - acc: 0.9436 - val_loss: 0.4412 - val_acc: 0.8304
+ - 16s - loss: 0.1185 - acc: 0.9586 - val_loss: 0.3620 - val_acc: 0.8957
 Epoch 40/100
- - 15s - loss: 0.1364 - acc: 0.9480 - val_loss: 0.5008 - val_acc: 0.8391
+ - 16s - loss: 0.1443 - acc: 0.9524 - val_loss: 0.4134 - val_acc: 0.8435
 Epoch 41/100
- - 15s - loss: 0.1534 - acc: 0.9467 - val_loss: 0.5973 - val_acc: 0.7870
+ - 16s - loss: 0.1099 - acc: 0.9637 - val_loss: 0.3416 - val_acc: 0.8913
 Epoch 42/100
- - 16s - loss: 0.1561 - acc: 0.9392 - val_loss: 0.4039 - val_acc: 0.8217
+ - 16s - loss: 0.1225 - acc: 0.9586 - val_loss: 0.3601 - val_acc: 0.8913
 Epoch 43/100
- - 16s - loss: 0.1333 - acc: 0.9530 - val_loss: 0.4961 - val_acc: 0.8304
+ - 16s - loss: 0.1294 - acc: 0.9561 - val_loss: 0.3772 - val_acc: 0.8565
 Epoch 44/100
- - 15s - loss: 0.1290 - acc: 0.9486 - val_loss: 0.4029 - val_acc: 0.8522
+ - 16s - loss: 0.1152 - acc: 0.9605 - val_loss: 0.3764 - val_acc: 0.8957
 Epoch 45/100
- - 16s - loss: 0.1239 - acc: 0.9555 - val_loss: 0.4681 - val_acc: 0.8435
+ - 16s - loss: 0.1261 - acc: 0.9586 - val_loss: 0.3041 - val_acc: 0.9130
 Epoch 46/100
- - 16s - loss: 0.1599 - acc: 0.9543 - val_loss: 0.3727 - val_acc: 0.8696
+ - 16s - loss: 0.1208 - acc: 0.9680 - val_loss: 0.3982 - val_acc: 0.8783
 Epoch 47/100
- - 16s - loss: 0.1690 - acc: 0.9549 - val_loss: 0.4087 - val_acc: 0.8565
+ - 16s - loss: 0.1040 - acc: 0.9668 - val_loss: 0.5527 - val_acc: 0.8391
 Epoch 48/100
- - 15s - loss: 0.1577 - acc: 0.9643 - val_loss: 0.4389 - val_acc: 0.8652
+ - 16s - loss: 0.1047 - acc: 0.9662 - val_loss: 0.3378 - val_acc: 0.8957
 Epoch 49/100
- - 15s - loss: 0.1555 - acc: 0.9612 - val_loss: 0.4509 - val_acc: 0.8348
+ - 16s - loss: 0.0928 - acc: 0.9687 - val_loss: 0.4093 - val_acc: 0.8783
 Epoch 50/100
- - 16s - loss: 0.1713 - acc: 0.9499 - val_loss: 0.4125 - val_acc: 0.8522
+ - 16s - loss: 0.1135 - acc: 0.9624 - val_loss: 0.3740 - val_acc: 0.8783
 Epoch 51/100
- - 16s - loss: 0.1644 - acc: 0.9536 - val_loss: 0.4621 - val_acc: 0.8391
+ - 16s - loss: 0.1022 - acc: 0.9637 - val_loss: 0.3632 - val_acc: 0.8870
 Epoch 52/100
- - 16s - loss: 0.1504 - acc: 0.9637 - val_loss: 0.5430 - val_acc: 0.8304
+ - 16s - loss: 0.0965 - acc: 0.9668 - val_loss: 0.4594 - val_acc: 0.8783
 Epoch 53/100
- - 16s - loss: 0.1517 - acc: 0.9580 - val_loss: 0.4044 - val_acc: 0.8478
+ - 16s - loss: 0.1004 - acc: 0.9674 - val_loss: 0.4589 - val_acc: 0.8696
 Epoch 54/100
- - 16s - loss: 0.1587 - acc: 0.9568 - val_loss: 0.4371 - val_acc: 0.8565
+ - 16s - loss: 0.1041 - acc: 0.9706 - val_loss: 0.3537 - val_acc: 0.9000
 Epoch 55/100
- - 16s - loss: 0.1550 - acc: 0.9643 - val_loss: 0.3973 - val_acc: 0.8609
+ - 16s - loss: 0.0901 - acc: 0.9687 - val_loss: 0.5311 - val_acc: 0.8652
 Epoch 56/100
- - 16s - loss: 0.1672 - acc: 0.9505 - val_loss: 0.4240 - val_acc: 0.8391
+ - 16s - loss: 0.1149 - acc: 0.9605 - val_loss: 0.4101 - val_acc: 0.8826
 Epoch 57/100
- - 16s - loss: 0.1471 - acc: 0.9649 - val_loss: 0.4025 - val_acc: 0.8565
+ - 16s - loss: 0.0893 - acc: 0.9743 - val_loss: 0.2933 - val_acc: 0.9174
 Epoch 58/100
- - 16s - loss: 0.1453 - acc: 0.9643 - val_loss: 0.3826 - val_acc: 0.8565
+ - 17s - loss: 0.0943 - acc: 0.9718 - val_loss: 0.3785 - val_acc: 0.8870
 Epoch 59/100
- - 16s - loss: 0.1436 - acc: 0.9655 - val_loss: 0.5011 - val_acc: 0.8522
+ - 16s - loss: 0.1139 - acc: 0.9630 - val_loss: 0.3692 - val_acc: 0.8783
 Epoch 60/100
- - 16s - loss: 0.1360 - acc: 0.9668 - val_loss: 0.4521 - val_acc: 0.8348
+ - 16s - loss: 0.0969 - acc: 0.9649 - val_loss: 0.4516 - val_acc: 0.8913
 Epoch 61/100
- - 16s - loss: 0.1475 - acc: 0.9586 - val_loss: 0.4195 - val_acc: 0.8870
+ - 16s - loss: 0.0820 - acc: 0.9749 - val_loss: 0.3710 - val_acc: 0.8739
 Epoch 62/100
- - 16s - loss: 0.1335 - acc: 0.9655 - val_loss: 0.4254 - val_acc: 0.8652
+ - 16s - loss: 0.0876 - acc: 0.9718 - val_loss: 0.3647 - val_acc: 0.8870
 Epoch 63/100
- - 16s - loss: 0.1156 - acc: 0.9737 - val_loss: 0.3972 - val_acc: 0.8696
+ - 16s - loss: 0.0777 - acc: 0.9793 - val_loss: 0.3774 - val_acc: 0.8783
 Epoch 64/100
- - 16s - loss: 0.1056 - acc: 0.9674 - val_loss: 0.4340 - val_acc: 0.8652
+ - 16s - loss: 0.0793 - acc: 0.9749 - val_loss: 0.3910 - val_acc: 0.8826
 Epoch 65/100
- - 16s - loss: 0.0933 - acc: 0.9718 - val_loss: 0.4488 - val_acc: 0.8870
+ - 16s - loss: 0.0711 - acc: 0.9806 - val_loss: 0.8163 - val_acc: 0.8217
 Epoch 66/100
- - 16s - loss: 0.0987 - acc: 0.9655 - val_loss: 0.4070 - val_acc: 0.8609
+ - 16s - loss: 0.0859 - acc: 0.9693 - val_loss: 0.5582 - val_acc: 0.8652
 Epoch 67/100
- - 16s - loss: 0.0911 - acc: 0.9693 - val_loss: 0.3573 - val_acc: 0.8957
+ - 16s - loss: 0.0854 - acc: 0.9724 - val_loss: 0.4530 - val_acc: 0.8739
 Epoch 68/100
- - 16s - loss: 0.0868 - acc: 0.9706 - val_loss: 0.4827 - val_acc: 0.8609
+ - 16s - loss: 0.0722 - acc: 0.9787 - val_loss: 0.4124 - val_acc: 0.8783
 Epoch 69/100
- - 16s - loss: 0.0948 - acc: 0.9706 - val_loss: 0.3911 - val_acc: 0.8783
+ - 16s - loss: 0.0803 - acc: 0.9749 - val_loss: 0.3996 - val_acc: 0.8913
 Epoch 70/100
- - 17s - loss: 0.1155 - acc: 0.9593 - val_loss: 0.4174 - val_acc: 0.8739
+ - 16s - loss: 0.0680 - acc: 0.9812 - val_loss: 0.3904 - val_acc: 0.8870
 Epoch 71/100
- - 16s - loss: 0.0794 - acc: 0.9718 - val_loss: 0.4447 - val_acc: 0.8826
+ - 16s - loss: 0.0763 - acc: 0.9724 - val_loss: 0.5681 - val_acc: 0.8609
 Epoch 72/100
- - 16s - loss: 0.0873 - acc: 0.9706 - val_loss: 0.4635 - val_acc: 0.8739
+ - 16s - loss: 0.0817 - acc: 0.9768 - val_loss: 0.4180 - val_acc: 0.8870
 Epoch 73/100
- - 15s - loss: 0.0836 - acc: 0.9762 - val_loss: 0.5015 - val_acc: 0.8565
+ - 16s - loss: 0.0781 - acc: 0.9724 - val_loss: 0.4653 - val_acc: 0.8826
 Epoch 74/100
- - 16s - loss: 0.0829 - acc: 0.9706 - val_loss: 0.4661 - val_acc: 0.8565
+ - 16s - loss: 0.0924 - acc: 0.9731 - val_loss: 0.4633 - val_acc: 0.8826
 Epoch 75/100
- - 16s - loss: 0.0980 - acc: 0.9674 - val_loss: 0.4437 - val_acc: 0.8696
+ - 16s - loss: 0.0687 - acc: 0.9806 - val_loss: 0.4670 - val_acc: 0.8783
 Epoch 76/100
- - 16s - loss: 0.0806 - acc: 0.9749 - val_loss: 0.4709 - val_acc: 0.8609
+ - 16s - loss: 0.0797 - acc: 0.9756 - val_loss: 0.4823 - val_acc: 0.8652
 Epoch 77/100
- - 15s - loss: 0.0832 - acc: 0.9724 - val_loss: 0.4512 - val_acc: 0.8783
+ - 16s - loss: 0.0641 - acc: 0.9812 - val_loss: 0.4203 - val_acc: 0.8783
 Epoch 78/100
- - 16s - loss: 0.0842 - acc: 0.9756 - val_loss: 0.6242 - val_acc: 0.8565
+ - 16s - loss: 0.0808 - acc: 0.9756 - val_loss: 0.4159 - val_acc: 0.8826
 Epoch 79/100
- - 16s - loss: 0.0807 - acc: 0.9749 - val_loss: 0.4792 - val_acc: 0.8522
+ - 16s - loss: 0.0731 - acc: 0.9812 - val_loss: 0.4468 - val_acc: 0.8826
 Epoch 80/100
- - 15s - loss: 0.0725 - acc: 0.9774 - val_loss: 0.4907 - val_acc: 0.8522
+ - 16s - loss: 0.0809 - acc: 0.9737 - val_loss: 0.3634 - val_acc: 0.8826
 Epoch 81/100
- - 16s - loss: 0.0754 - acc: 0.9762 - val_loss: 0.4270 - val_acc: 0.9000
+ - 16s - loss: 0.0813 - acc: 0.9737 - val_loss: 0.4430 - val_acc: 0.8783
 Epoch 82/100
- - 16s - loss: 0.0817 - acc: 0.9774 - val_loss: 0.4856 - val_acc: 0.8565
+ - 16s - loss: 0.0549 - acc: 0.9856 - val_loss: 0.4279 - val_acc: 0.9000
 Epoch 83/100
- - 16s - loss: 0.0798 - acc: 0.9756 - val_loss: 0.5203 - val_acc: 0.8565
+ - 16s - loss: 0.0606 - acc: 0.9818 - val_loss: 0.3910 - val_acc: 0.8913
 Epoch 84/100
- - 16s - loss: 0.0762 - acc: 0.9749 - val_loss: 0.5952 - val_acc: 0.8522
+ - 16s - loss: 0.0637 - acc: 0.9843 - val_loss: 0.4115 - val_acc: 0.8957
 Epoch 85/100
- - 16s - loss: 0.0736 - acc: 0.9762 - val_loss: 0.4916 - val_acc: 0.8783
+ - 16s - loss: 0.0610 - acc: 0.9818 - val_loss: 0.3930 - val_acc: 0.8913
 Epoch 86/100
- - 16s - loss: 0.0766 - acc: 0.9774 - val_loss: 0.4251 - val_acc: 0.8826
+ - 16s - loss: 0.0742 - acc: 0.9762 - val_loss: 0.3934 - val_acc: 0.8870
 Epoch 87/100
- - 15s - loss: 0.0656 - acc: 0.9793 - val_loss: 0.4789 - val_acc: 0.8913
+ - 16s - loss: 0.0797 - acc: 0.9781 - val_loss: 0.3716 - val_acc: 0.8826
 Epoch 88/100
- - 16s - loss: 0.0916 - acc: 0.9712 - val_loss: 0.4425 - val_acc: 0.8739
+ - 16s - loss: 0.0598 - acc: 0.9806 - val_loss: 0.4503 - val_acc: 0.8957
 Epoch 89/100
- - 16s - loss: 0.0718 - acc: 0.9743 - val_loss: 0.4695 - val_acc: 0.8826
+ - 16s - loss: 0.0616 - acc: 0.9812 - val_loss: 0.4220 - val_acc: 0.8957
 Epoch 90/100
- - 16s - loss: 0.0807 - acc: 0.9743 - val_loss: 0.4696 - val_acc: 0.8783
+ - 16s - loss: 0.0630 - acc: 0.9825 - val_loss: 0.5491 - val_acc: 0.8696
 Epoch 91/100
- - 16s - loss: 0.0756 - acc: 0.9787 - val_loss: 0.5225 - val_acc: 0.8565
+ - 16s - loss: 0.0572 - acc: 0.9850 - val_loss: 0.5459 - val_acc: 0.8739
 Epoch 92/100
- - 16s - loss: 0.0780 - acc: 0.9756 - val_loss: 0.4591 - val_acc: 0.8696
+ - 16s - loss: 0.0632 - acc: 0.9825 - val_loss: 0.4132 - val_acc: 0.8870
 Epoch 93/100
- - 16s - loss: 0.0734 - acc: 0.9724 - val_loss: 0.4758 - val_acc: 0.8522
+ - 16s - loss: 0.0685 - acc: 0.9787 - val_loss: 0.4799 - val_acc: 0.8739
 Epoch 94/100
- - 15s - loss: 0.0688 - acc: 0.9825 - val_loss: 0.5325 - val_acc: 0.8783
+ - 16s - loss: 0.0584 - acc: 0.9850 - val_loss: 0.4299 - val_acc: 0.8783
 Epoch 95/100
- - 16s - loss: 0.0686 - acc: 0.9799 - val_loss: 0.4438 - val_acc: 0.8783
+ - 16s - loss: 0.0595 - acc: 0.9793 - val_loss: 0.4697 - val_acc: 0.8696
 Epoch 96/100
- - 16s - loss: 0.0668 - acc: 0.9837 - val_loss: 0.4825 - val_acc: 0.8870
+ - 16s - loss: 0.0635 - acc: 0.9787 - val_loss: 0.5062 - val_acc: 0.8913
 Epoch 97/100
- - 15s - loss: 0.0810 - acc: 0.9768 - val_loss: 0.4633 - val_acc: 0.8696
+ - 16s - loss: 0.0624 - acc: 0.9781 - val_loss: 0.4319 - val_acc: 0.8783
 Epoch 98/100
- - 16s - loss: 0.0629 - acc: 0.9818 - val_loss: 0.4395 - val_acc: 0.8739
+ - 16s - loss: 0.0528 - acc: 0.9862 - val_loss: 0.4295 - val_acc: 0.8826
 Epoch 99/100
- - 16s - loss: 0.0626 - acc: 0.9831 - val_loss: 0.5342 - val_acc: 0.8696
+ - 16s - loss: 0.0571 - acc: 0.9843 - val_loss: 0.6314 - val_acc: 0.8652
 Epoch 100/100
- - 16s - loss: 0.0658 - acc: 0.9806 - val_loss: 0.4964 - val_acc: 0.8609
-Final test_acc: 0.9267241358757019
-Final test_loss: 0.2092242220352436
-Best test_acc: 0.9267241358757019
-Best test_loss: 0.19324737890013333
+ - 16s - loss: 0.0521 - acc: 0.9875 - val_loss: 0.6315 - val_acc: 0.8783
+Final test_acc: 0.9482758579583004
+Final test_loss: 0.2163128308181105
+Best test_acc: 0.9353448316968721
+Best test_loss: 0.17720138589883672

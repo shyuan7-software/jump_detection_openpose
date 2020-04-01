@@ -50,14 +50,14 @@ def video_to_landmarks(landmark_path, num_image):
     frame_num = len(json_names)
     if frame_num == 0:
         return [], False
-    #sample_rate = math.ceil(frame_num / num_image)
+    # sample_rate = math.ceil(frame_num / num_image)
     sample_rate = frame_num / num_image
     if sample_rate == 0:
         sample_rate += 1
     for frame_id in range(frame_num):
         if len(landmarks) == num_image:
             break
-        #if frame_id % sample_rate == 0:
+        # if frame_id % sample_rate == 0:
         if int(sample_rate * len(landmarks)) <= frame_id:
             # print(frame_id)
             landmarks.append(decode_json(landmark_path + json_names[frame_id]))
@@ -226,7 +226,8 @@ np.save("30image/test_tracks_30image", test_tracks)
 np.save("30image/test_lables_30image", test_lables)
 print(test_videos.shape, test_tracks.shape, test_lables.shape)'''
 
-def get_temp_seq_part(tracks, part_indexs,num_image):
+
+def get_temp_seq_part(tracks, part_indexs, num_image):
     # part_indexs:
     # left arm:     [2, 3, 4]
     # right arm:    [5, 6, 7]
@@ -247,18 +248,18 @@ def get_temp_seq_part(tracks, part_indexs,num_image):
     return temp_seq_part
 
 
-def get_temp_seq(tracks,num_image):
+def get_temp_seq(tracks, num_image):
     # part_indexs:
     # left_arm:     [2, 3, 4]
     # right_arm:    [5, 6, 7]
     # trunk:        [0, 1, 8]
     # left_leg:     [9, 10, 11, 24, 22, 23]
     # right_leg:    [12, 13, 14, 21, 19, 20]
-    temp_seq_larm = get_temp_seq_part(tracks, [2, 3, 4],num_image)
-    temp_seq_rarm = get_temp_seq_part(tracks, [5, 6, 7],num_image)
-    temp_seq_trunk = get_temp_seq_part(tracks, [0, 1, 8],num_image)
-    temp_seq_lleg = get_temp_seq_part(tracks, [9, 10, 11, 24, 22, 23],num_image)
-    temp_seq_rleg = get_temp_seq_part(tracks, [12, 13, 14, 21, 19, 20],num_image)
+    temp_seq_larm = get_temp_seq_part(tracks, [2, 3, 4], num_image)
+    temp_seq_rarm = get_temp_seq_part(tracks, [5, 6, 7], num_image)
+    temp_seq_trunk = get_temp_seq_part(tracks, [0, 1, 8], num_image)
+    temp_seq_lleg = get_temp_seq_part(tracks, [9, 10, 11, 24, 22, 23], num_image)
+    temp_seq_rleg = get_temp_seq_part(tracks, [12, 13, 14, 21, 19, 20], num_image)
     return (temp_seq_larm,
             temp_seq_rarm,
             temp_seq_trunk,
@@ -266,7 +267,7 @@ def get_temp_seq(tracks,num_image):
             temp_seq_rleg)
 
 
-def get_spat_seq(tracks,num_image):
+def get_spat_seq(tracks, num_image):
     '''
     chain sequence:
     1.left hand to right hand:
@@ -282,18 +283,20 @@ def get_spat_seq(tracks,num_image):
                  9, 10, 11, 23, 22, 24, 11, 10, 9, 8,
                  12, 13, 14, 21, 19, 20, 14, 13, 12, 8,
                  1]
+    window_size = num_image // 4
     spat_seq = []
     for i in range(len(tracks)):
         batch = []
         for k in chain_seq:
             joints = []
-            for j in range(num_image):
+            for j in range(num_image // 2 - window_size // 2, num_image // 2 + window_size // 2):
                 joints.append(tracks[i][j][k][0:2])
             batch.append(joints)
         spat_seq.append(batch)
     spat_seq = np.array(spat_seq)
-    spat_seq = spat_seq.reshape(len(tracks), len(chain_seq), num_image * 2)
+    spat_seq = spat_seq.reshape(len(tracks), len(chain_seq), window_size * 2)
     return spat_seq
+
 
 class WeightedSum(Layer):
     def __init__(self, a, **kwargs):

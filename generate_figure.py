@@ -118,5 +118,5 @@ if __name__ == '__main__':
     v_path = sys.argv[1]  # 'sample/no_jump.mp4'
     l_path = sys.argv[2]  # 'sample/no_jump'
     generate_figure(video_path=v_path, landmark_path=l_path,
-                    model_path='model/submission2/new_COMP_TWO_STREAM_GRU_3layer512_25_20.5dropout_64batch_32image_100epoch_noHMDB_best.h5',
+                    model_path='model/submission2/windowsize_COMP_TWO_STREAM_GRU_3layer512_25_20.5dropout_64batch_32image_100epoch_noHMDB_best.h5',
                     num_image=32)

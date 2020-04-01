@@ -14,14 +14,14 @@ a video, and a directory that stores landmark files. This file will output a jso
 ![alt text](https://github.com/shyuan7-software/images/blob/master/generate_figure_result.png)
 
 ## Directory:
-### 1. ./video_track_model/:
+### 1. ./model/:
 This directory stores the output from train_model.py when training.  
 Under this directory, Dense128-32_GRU32_CNN16-32-32_GRU16_16batch_10image_50epoch_best.h5 file is the best trained model I can get.
 
 ### 2. ./dataset/ (not in github):
 This directory stores all the dataset in forms of clips and landmark json files  
 The dataset is too large to be uploaded to github, please access it through:  
-[dataset](https://drive.google.com/drive/folders/1vUYK2-X1HWBWLH3C1e4IYcaMAN_CzRjg?usp=sharing) 
+[dataset](https://drive.google.com/file/d/1shPnXQeDR2yWOFankFqCrR7JyakFenSl/view?usp=sharing) 
 
 ### 3. ./32image/ (not in github):
 This directory stores all the dataset in forms of .NPY files  
