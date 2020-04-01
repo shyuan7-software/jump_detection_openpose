@@ -23,12 +23,17 @@ This directory stores all the dataset in forms of clips and landmark json files
 The dataset is too large to be uploaded to github, please access it through:  
 [dataset](https://drive.google.com/drive/folders/1vUYK2-X1HWBWLH3C1e4IYcaMAN_CzRjg?usp=sharing) 
 
-### 3. ./10image/ (not in github):
+### 3. ./32image/ (not in github):
 This directory stores all the dataset in forms of .NPY files  
 The dataset is too large to be uploaded to github, please access it through:  
-[10image](https://drive.google.com/drive/folders/1V6PB5sE8K8jLW1UnnoBPDZVhQO-tLXAh)
+[32image](https://drive.google.com/drive/folders/1b11D5WAf7ELt4FV2HNGCvS3ZCKkNhYJS?usp=sharing)
 
 ### 4. ./sample/ (not in github):
-This is for test purpose, under this directory, there are 6 videos (I shoot myself jumping) and their landmark files, you can easily
+This is for test purpose, under this directory, there are 13 videos (I shoot myself jumping) and their landmark files, you can easily
 test my code with this directory.  
-[sample](https://drive.google.com/drive/folders/1St1RiO6kB9MlPiOF6ItiIuPoCYV1uahQ?usp=sharing)
+[sample](https://drive.google.com/file/d/1TO9qZnFNA0U0Kj7CNqGJTSWKzFSaqOC5/view?usp=sharing)
+
+
+## Improvement done to the next submission(submission-2):
+1. Improve the quality of the dataset, by deleting data from HMDB (the video from HMDB always consists more than one person), best: 0.8405172413793104
+2. To be update tomorrow...

@@ -6,3 +6,12 @@
 /_pycache_/
 /test.py
 /30image/
+/dataset_noHMDB/
+/10image_noHMDB/
+/two_stream_rrn.py
+/complex_two_stream_rrn.py
+/new_COMP_TWO_STREAM_GRU_3layer512_25_20.5dropout_64batch_32image_100epoch_noHMDB/
+/InceptionV3_True0.5dropout_16batch_10image_25epoch_noHMDB/
+/original0.5dropout_16batch_10image_25epoch_noHMDB/
+/npy/
+/gitignore/

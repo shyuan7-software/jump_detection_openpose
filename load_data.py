@@ -8,12 +8,13 @@
 #            --> test  --> jump   --> (lots of video, the name of video should contain "jump")
 #                          others --> (lots of video, the name of video should not contain "jump")
 # Then, just run load_all_dataset(dataset_dir), it will return train, valid, and test dataset in order
-import os
-import cv2
-import math
-import numpy as np
-import random
 import json as js
+import os
+import random
+
+import cv2
+import numpy as np
+from keras.engine import Layer
 
 
 # video_path- "dataset/landmarks/test/jump/jump1.mp4/jump1_000000000000_keypoints.json"
@@ -49,13 +50,15 @@ def video_to_landmarks(landmark_path, num_image):
     frame_num = len(json_names)
     if frame_num == 0:
         return [], False
-    sample_rate = math.ceil(frame_num / num_image)
+    #sample_rate = math.ceil(frame_num / num_image)
+    sample_rate = frame_num / num_image
     if sample_rate == 0:
         sample_rate += 1
     for frame_id in range(frame_num):
         if len(landmarks) == num_image:
             break
-        if frame_id % sample_rate == 0:
+        #if frame_id % sample_rate == 0:
+        if int(sample_rate * len(landmarks)) <= frame_id:
             # print(frame_id)
             landmarks.append(decode_json(landmark_path + json_names[frame_id]))
     empty_landmark = [[0, 0, 0]] * 25
@@ -84,7 +87,8 @@ def video_to_imgaes(video_path, num_image):
         print(video_path)
         return [], False
     frame_num = video.get(7)
-    sample_rate = math.ceil(frame_num / num_image)
+    # sample_rate = math.ceil(frame_num / num_image)
+    sample_rate = frame_num / num_image
     if sample_rate == 0:
         sample_rate += 1
     images = []
@@ -95,9 +99,13 @@ def video_to_imgaes(video_path, num_image):
             break
         if image.all() != None:
             image = cv2.resize(image, (224, 224), interpolation=cv2.INTER_AREA)
-        if frameId % sample_rate == 0:
+        # if frameId % sample_rate == 0:
+        if int(sample_rate * len(images)) <= frameId:
             # print(frameId)
             images.append(image)
+            # cv2.namedWindow("Image")
+            # cv2.imshow("Image", image)
+            # cv2.waitKey(0)
 
     empty_img = np.zeros((224, 224, 3), np.uint8)
     while len(images) < num_image:
@@ -217,3 +225,88 @@ np.save("30image/test_videos_30image", test_videos)
 np.save("30image/test_tracks_30image", test_tracks)
 np.save("30image/test_lables_30image", test_lables)
 print(test_videos.shape, test_tracks.shape, test_lables.shape)'''
+
+def get_temp_seq_part(tracks, part_indexs,num_image):
+    # part_indexs:
+    # left arm:     [2, 3, 4]
+    # right arm:    [5, 6, 7]
+    # trunk:        [0, 1, 8]
+    # left leg:     [9, 10, 11, 24, 22, 23]
+    # right leg:    [12, 13, 14, 21, 19, 20]
+    temp_seq_part = []
+    for i in range(len(tracks)):
+        batch = []
+        for j in range(num_image):
+            image = []
+            for k in part_indexs:
+                image.append(tracks[i][j][k][0:2])
+            batch.append(image)
+        temp_seq_part.append(batch)
+    temp_seq_part = np.array(temp_seq_part)
+    temp_seq_part = temp_seq_part.reshape(len(tracks), num_image, len(part_indexs) * 2)
+    return temp_seq_part
+
+
+def get_temp_seq(tracks,num_image):
+    # part_indexs:
+    # left_arm:     [2, 3, 4]
+    # right_arm:    [5, 6, 7]
+    # trunk:        [0, 1, 8]
+    # left_leg:     [9, 10, 11, 24, 22, 23]
+    # right_leg:    [12, 13, 14, 21, 19, 20]
+    temp_seq_larm = get_temp_seq_part(tracks, [2, 3, 4],num_image)
+    temp_seq_rarm = get_temp_seq_part(tracks, [5, 6, 7],num_image)
+    temp_seq_trunk = get_temp_seq_part(tracks, [0, 1, 8],num_image)
+    temp_seq_lleg = get_temp_seq_part(tracks, [9, 10, 11, 24, 22, 23],num_image)
+    temp_seq_rleg = get_temp_seq_part(tracks, [12, 13, 14, 21, 19, 20],num_image)
+    return (temp_seq_larm,
+            temp_seq_rarm,
+            temp_seq_trunk,
+            temp_seq_lleg,
+            temp_seq_rleg)
+
+
+def get_spat_seq(tracks,num_image):
+    '''
+    chain sequence:
+    1.left hand to right hand:
+        4,3,2,5,6,7
+    2.head to hip:
+         0, 1, 8
+    3.left foot to right foot:
+        23, 22, 24, 11, 10, 9, 12, 13, 14, 21, 19, 20
+    '''
+    chain_seq = [1, 2, 3, 4, 3, 2,
+                 1, 5, 6, 7, 6, 5,
+                 1, 0, 1, 8,
+                 9, 10, 11, 23, 22, 24, 11, 10, 9, 8,
+                 12, 13, 14, 21, 19, 20, 14, 13, 12, 8,
+                 1]
+    spat_seq = []
+    for i in range(len(tracks)):
+        batch = []
+        for k in chain_seq:
+            joints = []
+            for j in range(num_image):
+                joints.append(tracks[i][j][k][0:2])
+            batch.append(joints)
+        spat_seq.append(batch)
+    spat_seq = np.array(spat_seq)
+    spat_seq = spat_seq.reshape(len(tracks), len(chain_seq), num_image * 2)
+    return spat_seq
+
+class WeightedSum(Layer):
+    def __init__(self, a, **kwargs):
+        self.a = a
+        super(WeightedSum, self).__init__(**kwargs)
+
+    def call(self, model_outputs):
+        return self.a * model_outputs[0] + (1 - self.a) * model_outputs[1]
+
+    def compute_output_shape(self, input_shape):
+        return input_shape[0]
+
+    def get_config(self):
+        config = {'a': self.a}
+        base_config = super(WeightedSum, self).get_config()
+        return dict(list(base_config.items()) + list(config.items()))
