@@ -15,8 +15,8 @@ a video, and a directory that stores landmark files. This file will output a jso
 
 ## Directory:
 ### 1. ./model/:
-This directory stores the output from train_model.py when training.  
-Under this directory, Dense128-32_GRU32_CNN16-32-32_GRU16_16batch_10image_50epoch_best.h5 file is the best trained model I can get.
+This directory stores the trained models.    
+Under this directory, model/submission2/windowsize_COMP_TWO_STREAM_GRU_3layer512_25_20.5dropout_64batch_32image_100epoch_noHMDB_best.h5 file is the best trained model I can get.
 
 ### 2. ./dataset/ (not in github):
 This directory stores all the dataset in forms of clips and landmark json files  
@@ -34,6 +34,20 @@ test my code with this directory.
 [sample](https://drive.google.com/file/d/1TO9qZnFNA0U0Kj7CNqGJTSWKzFSaqOC5/view?usp=sharing)
 
 
-## Improvement done to the next submission(submission-2):
-1. Improve the quality of the dataset, by deleting data from HMDB (the video from HMDB always consists more than one person), best: 0.8405172413793104
-2. To be update tomorrow...
+## Improvement of submission-2:
+1. Improved the quality of the dataset, by deleting videos from HMDB51 (the videos from HMDB51 always consists more than one person)
+2. Disregarded the original video input, and only focus on the body-landmarks input
+3. Improved the sample rate from 10 frames per clip to 32 frames per clip
+4. Updated the model, with the [paper](https://arxiv.org/abs/1704.02581)
+5. Added more sample videos for test purpose
+
+## Improving direction on the third submission:
+Main tasks:   
+&#8195;Design a new (CNN based) model that takes the original video as input  
+&#8195;Train the new model, so that it can keep 85% or higher accuracy  
+  
+Bonus points:   
+&#8195;Add videos of old people jumping/not jumping to dataset;   
+&#8195;Add more sample videos;   
+&#8195;Connect the new (CNN based) model with the current model (which takes body-landmarks as input), try to keep the accuracy higher than 85%;
+
