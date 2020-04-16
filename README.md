@@ -51,3 +51,17 @@ Bonus points:
 &#8195;Add more sample videos;   
 &#8195;Connect the new (CNN based) model with the current model (which takes body-landmarks as input), try to keep the accuracy higher than 85%;
 
+## Improvement of submission-3:
+1. Designed a CNN based two-stream CNN model, which takes orignial RGB video frames as input, based on the [paper](https://papers.nips.cc/paper/5353-two-stream-convolutional-networks-for-action-recognition-in-videos.pdf)
+2. Designed a CNN based model, which takes the skeleton data as input, based on the [paper](https://arxiv.org/pdf/1704.07595.pdf)
+3. Trained the model which takes skeleton data as input,and it has higher than 95% accuarcy
+
+## Improving direction on the fourth submission:
+Main tasks:   
+&#8195;Fuse the CNN based model and the RNN based model, to achieve a higher accuarcy  
+&#8195;Adjust the hyperparameter for the CNN based model and the RNN based model, so they will have an optimal performance  
+&#8195;Do experiment with CNN which takes RGB video frame as input, to know whether CNN can extract the feature of the distance between feets and ground. If yes, include it to the model.
+  
+Bonus points:   
+&#8195;Add videos of old people jumping/not jumping to the dataset;   
+&#8195;Add more sample videos;   
