@@ -2,7 +2,7 @@ import json
 import os
 from math import ceil
 
-from load_data import WeightedSum, get_spat_seq, get_temp_seq
+from load_data import WeightedSum, get_spat_seq, get_temp_seq, get_dataset_diff_based_CNN
 from load_data import decode_json
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
@@ -111,12 +111,44 @@ def generate_figure(video_path, landmark_path, model_path, num_image):
         json.dump(temp_dict, f)
     print('The result is located in ./output/' + videoname + '.json and ./output/' + videoname + '.png')
 
+def generate_figure_CNN(video_path, landmark_path, model_path, num_image):
+    clips, tracks = generate_clips_tracks(video_path, landmark_path, num_image)
+    coords, motions = get_dataset_diff_based_CNN(tracks, num_image)
+    if 'output' not in os.listdir('./'):
+        os.mkdir('output')
+    print(coords.shape, motions.shape)
+    videoname = video_path.split("/")[-1]
+    model = load_model(model_path)
+    predictions = model.predict([coords, motions])
+    Y = []
+    for (i, p) in enumerate(predictions):
+        Y.append(p[0])
+    X = [3 * x for x in range(0, len(clips))]
+    fig = plt.figure()
+    plt.bar(X, Y, 3, align='edge', ec='c', ls='-.', lw=1, color='#EECFA1', tick_label=X)
+    plt.tick_params(labelsize=6)
+
+    for (x, y) in zip(X, Y):
+        plt.text(x, y + 0.01, str(round(y, 2)) + '%', fontsize=6)
+    plt.xlabel("Time(s)")
+    plt.ylabel("Possibility(%)")
+    plt.title("Jump detection")
+    plt.savefig('./output/' + videoname + '.png', dpi=300)
+    plt.show()
+    # json
+    temp_dict = {'jump': []}
+    for i in range(len(clips)):
+        temp_dict['jump'].append({str(X[i]) + 's to ' + str(X[i] + 3) + 's': str(Y[i])})
+    json_file = './output/' + videoname + '.json'
+    with open(json_file, 'w') as f:
+        json.dump(temp_dict, f)
+    print('The result is located in ./output/' + videoname + '.json and ./output/' + videoname + '.png')
 
 # video_path: where is your video?
 # landmark_path: where is the video's corresponding landmark directory?
 if __name__ == '__main__':
     v_path = sys.argv[1]  # 'sample/no_jump.mp4'
     l_path = sys.argv[2]  # 'sample/no_jump'
-    generate_figure(video_path=v_path, landmark_path=l_path,
-                    model_path='model/submission2/windowsize_COMP_TWO_STREAM_GRU_3layer512_25_20.5dropout_64batch_32image_100epoch_noHMDB_best.h5',
+    generate_figure_CNN(video_path=v_path, landmark_path=l_path,
+                    model_path='model/submission3/CNN_model_best.h5',
                     num_image=32)

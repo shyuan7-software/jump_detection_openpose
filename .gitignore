@@ -15,3 +15,5 @@
 /original0.5dropout_16batch_10image_25epoch_noHMDB/
 /npy/
 /gitignore/
+/fusion_model.py
+/model/CNN_model/

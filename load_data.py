@@ -60,7 +60,9 @@ def video_to_landmarks(landmark_path, num_image):
         # if frame_id % sample_rate == 0:
         if int(sample_rate * len(landmarks)) <= frame_id:
             # print(frame_id)
-            landmarks.append(decode_json(landmark_path + json_names[frame_id]))
+            landmark = decode_json(landmark_path + json_names[frame_id])
+            if not np.all(landmark == 0):
+                landmarks.append(landmark)
     empty_landmark = [[0, 0, 0]] * 25
     while len(landmarks) < num_image:
         landmarks.append(empty_landmark)
@@ -124,7 +126,8 @@ def load_videos_tracks(videos_dir, landmark_dir, num_image):
     labels = []
     for file in dirs:
         print(videos_dir + file)
-        video, res1 = video_to_imgaes(videos_dir + file, num_image)
+        # video, res1 = video_to_imgaes(videos_dir + file, num_image)
+        video, res1 = [], True
         body_track, res2 = video_to_landmarks(landmark_dir + file, num_image)
         if not res1 or not res2:
             continue
@@ -207,24 +210,29 @@ print(test_videos.shape)
 print(test_tracks.shape)
 print(test_lables.shape)
 '''
-'''(train_videos, train_tracks, train_lables), (valid_videos, valid_tracks, valid_lables), (
-    test_videos, test_tracks, test_lables) \
-    = load_dataset(video_dir="dataset/clips/", landmark_dir="dataset/landmarks/", num_image=30)
 
-np.save("30image/train_videos_30image", train_videos)
-np.save("30image/train_tracks_30image", train_tracks)
-np.save("30image/train_lables_30image", train_lables)
-print(train_videos.shape, train_tracks.shape, train_lables.shape)
 
-np.save("30image/valid_videos_30image", valid_videos)
-np.save("30image/valid_tracks_30image", valid_tracks)
-np.save("30image/valid_lables_30image", valid_lables)
-print(valid_videos.shape, valid_tracks.shape, valid_lables.shape)
-
-np.save("30image/test_videos_30image", test_videos)
-np.save("30image/test_tracks_30image", test_tracks)
-np.save("30image/test_lables_30image", test_lables)
-print(test_videos.shape, test_tracks.shape, test_lables.shape)'''
+#
+#
+# (train_videos, train_tracks, train_lables), (valid_videos, valid_tracks, valid_lables), (
+#     test_videos, test_tracks, test_lables) \
+#     = load_dataset(video_dir="gitignore/dataset_noHMDB/clips/", landmark_dir="gitignore/dataset_noHMDB/landmarks/",
+#                    num_image=16)
+#
+# np.save("gitignore/npy/16image_noHMDB_noEmptyFrame/train_videos", train_videos)
+# np.save("gitignore/npy/16image_noHMDB_noEmptyFrame/train_tracks", train_tracks)
+# np.save("gitignore/npy/16image_noHMDB_noEmptyFrame/train_lables", train_lables)
+# print(train_videos.shape, train_tracks.shape, train_lables.shape)
+#
+# np.save("gitignore/npy/16image_noHMDB_noEmptyFrame/valid_videos", valid_videos)
+# np.save("gitignore/npy/16image_noHMDB_noEmptyFrame/valid_tracks", valid_tracks)
+# np.save("gitignore/npy/16image_noHMDB_noEmptyFrame/valid_lables", valid_lables)
+# print(valid_videos.shape, valid_tracks.shape, valid_lables.shape)
+#
+# np.save("gitignore/npy/16image_noHMDB_noEmptyFrame/test_videos", test_videos)
+# np.save("gitignore/npy/16image_noHMDB_noEmptyFrame/test_tracks", test_tracks)
+# np.save("gitignore/npy/16image_noHMDB_noEmptyFrame/test_lables", test_lables)
+# print(test_videos.shape, test_tracks.shape, test_lables.shape)
 
 
 def get_temp_seq_part(tracks, part_indexs, num_image):
@@ -313,3 +321,320 @@ class WeightedSum(Layer):
         config = {'a': self.a}
         base_config = super(WeightedSum, self).get_config()
         return dict(list(base_config.items()) + list(config.items()))
+
+
+def optical_flow(video_path, num_image):
+    cap = cv2.VideoCapture(video_path)
+    if not cap.isOpened():
+        print(video_path)
+        return [], False
+    frame_num = cap.get(7)
+    sample_rate = frame_num / num_image
+    if sample_rate == 0:
+        sample_rate += 1
+    flows = []
+    frameId = cap.get(1)
+    ret, first_frame = cap.read()
+    first_frame = cv2.resize(first_frame, (224, 224), interpolation=cv2.INTER_AREA)
+    prev_gray = cv2.cvtColor(first_frame, cv2.COLOR_BGR2GRAY)
+    while cap.isOpened():
+        ret, frame = cap.read()
+        if not ret:
+            break
+        if len(flows) // 2 == num_image:
+            break
+        frame = cv2.resize(frame, (224, 224), interpolation=cv2.INTER_AREA)
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        flow = cv2.calcOpticalFlowFarneback(prev_gray, gray, None, 0.5, 3, 15, 3, 5, 1.2, 0)
+        flow_x = flow[..., 1]
+        flow_y = flow[..., 0]
+        if int(sample_rate * (len(flows) // 2)) <= frameId:
+            # print(frameId)
+            flows.append(flow_x)
+            flows.append(flow_y)
+            cv2.imshow("frame", frame)
+            cv2.imshow("x", flow_x)
+            cv2.imshow("y", flow_y)
+            cv2.waitKey()
+            # if cv2.waitKey(100) & 0xFF == ord('q'):
+            #     break
+        prev_gray = gray
+        frameId = cap.get(1)
+    # print(len(flows))
+    empty_flow = np.zeros((224, 224, 1), np.uint8)
+    while len(flows) // 2 < num_image:
+        flows.append(empty_flow)
+        flows.append(empty_flow)
+    cap.release()
+    cv2.destroyAllWindows()
+    res = np.stack(flows, axis=2)
+    # for i in range(20):
+    #     cv2.imshow("y", res[...,i])
+    #     cv2.waitKey(1000)
+    return res, True
+
+
+# optical_flow('gitignore/dataset/clips/test/jump/jump104.mp4', 10)
+def single_frame(video_path):
+    cap = cv2.VideoCapture(video_path)
+    if not cap.isOpened():
+        print(video_path)
+        return [], False
+    frame_num = cap.get(7)
+    cap.set(cv2.CAP_PROP_POS_FRAMES, frame_num // 2)
+    success, frame = cap.read()
+    # cv2.imshow('b', frame)
+    # cv2.waitKey(1000)
+    cap.release()
+    cv2.destroyAllWindows()
+    return cv2.resize(frame, (224, 224), interpolation=cv2.INTER_AREA), True
+
+
+# single_frame('gitignore/dataset/clips/test/jump/jump104.mp4')
+
+def load_flows_frame(videos_dir, num_image):
+    dirs = os.listdir(videos_dir)
+    flows = []
+    frames = []
+    labels = []
+    for file in dirs:
+        print(videos_dir + file)
+        flow, res1 = optical_flow(videos_dir + file, num_image)
+        frame, res2 = single_frame(videos_dir + file)
+        if not res1 or not res2:
+            continue
+        flows.append(flow)
+        frames.append(frame)
+        if "jump" in file:
+            labels.append(1)
+        else:
+            labels.append(0)
+    return np.array(flows), np.array(frames), np.array(labels)
+
+
+# a, b, c = load_flows_frame('gitignore/dataset/clips/test/jump/', 2)
+# print(a.shape, b.shape, c.shape)
+
+def load_all_flows_frame(video_dir, num_image):
+    videoset_dir_0 = video_dir + "jump/"  # class jump
+    videoset_dir_1 = video_dir + "others/"  # class others
+    others_flows, others_frames, others_labels = load_flows_frame(videoset_dir_1, num_image)
+    jump_flows, jump_frames, jump_lables = load_flows_frame(videoset_dir_0, num_image)
+
+    flows = np.concatenate((jump_flows, others_flows), 0)
+    frames = np.concatenate((jump_frames, others_frames), 0)
+    labels = np.concatenate((jump_lables, others_labels), 0)
+    index = [i for i in range(len(labels))]
+    random.shuffle(index)
+    flows = flows[index]
+    frames = frames[index]
+    labels = labels[index]
+    return flows, frames, labels
+
+
+# a, b, c = load_all_flows_frame('gitignore/dataset/clips/train/', 10)
+# print(a.shape, b.shape, c.shape)
+
+def load_dataset_CNN(video_dir, num_image):
+    train_video_dir = video_dir + "train/"
+    valid_video_dir = video_dir + "valid/"
+    test_video_dir = video_dir + "test/"
+    train_flows, train_frames, train_lables = load_all_flows_frame(train_video_dir, num_image)
+    valid_flows, valid_frames, valid_lables = load_all_flows_frame(valid_video_dir, num_image)
+    test_flows, test_frames, test_lables = load_all_flows_frame(test_video_dir, num_image)
+
+    return ((train_flows, train_frames, train_lables),
+            (valid_flows, valid_frames, valid_lables),
+            (test_flows, test_frames, test_lables))
+
+
+#
+#
+# ((train_flows, train_frames, train_lables), \
+#  (valid_flows, valid_frames, valid_lables), \
+#  (test_flows, test_frames, test_lables)) \
+#     = load_dataset_CNN(video_dir="./gitignore/dataset_noHMDB/clips/", num_image=10)
+#
+# np.save("gitignore/npy/10imgae_noHMDB_cnn/train_flows", train_flows)
+# np.save("gitignore/npy/10imgae_noHMDB_cnn/train_frames", train_frames)
+# np.save("gitignore/npy/10imgae_noHMDB_cnn/train_lables", train_lables)
+# print(train_flows.shape, train_frames.shape, train_lables.shape)
+#
+# np.save("gitignore/npy/10imgae_noHMDB_cnn/valid_flows", valid_flows)
+# np.save("gitignore/npy/10imgae_noHMDB_cnn/valid_frames", valid_frames)
+# np.save("gitignore/npy/10imgae_noHMDB_cnn/valid_lables", valid_lables)
+# print(valid_flows.shape, valid_frames.shape, valid_lables.shape)
+#
+# np.save("gitignore/npy/10imgae_noHMDB_cnn/test_flows", test_flows)
+# np.save("gitignore/npy/10imgae_noHMDB_cnn/test_frames", test_frames)
+# np.save("gitignore/npy/10imgae_noHMDB_cnn/test_lables", test_lables)
+# print(test_flows.shape, test_frames.shape, test_lables.shape)
+
+def draw_skeleton_pic(landmark, scale=224):
+    colors = [(0, 255, 0), (0, 0, 255), (255, 0, 0)]
+    edges = np.zeros((scale, scale))
+    edges[0, 1] = edges[1, 8] = edges[0, 15] = edges[0, 16] = edges[15, 17] = edges[16, 18] = 1
+    edges[1, 2] = edges[2, 3] = edges[3, 4] = edges[1, 5] = edges[5, 6] = edges[6, 7] = 2
+    edges[8, 9] = edges[9, 10] = edges[10, 11] = edges[11, 24] = edges[11, 22] = edges[22, 23] = \
+        edges[8, 12] = edges[12, 13] = edges[13, 14] = edges[14, 21] = edges[14, 19] = edges[19, 20] = 3
+    canvas = np.zeros((scale, scale, 3), np.uint8)
+    for i in range(25):
+        for j in range(i + 1, 25):
+            if edges[i, j] > 0:
+                x1, y1, c1 = int(landmark[i, 0] * scale), int(landmark[i, 1] * scale), landmark[i, 2]
+                x2, y2, c2 = int(landmark[j, 0] * scale), int(landmark[j, 1] * scale), landmark[j, 2]
+                # if x1 == y1 == 0 or x2 == y2 == 0:
+                if c1 == 0 or c2 == 0:
+                    continue
+                cv2.line(canvas, (x1, y1), (x2, y2), colors[int(edges[i, j] - 1)], thickness=3)
+    # cv2.imshow("Canvas", canvas)
+    # cv2.waitKey(0)
+    # print(type(canvas))
+    return canvas
+
+
+def draw_ST_skeleton_pic(video, scale=224):
+    white = (255, 255, 255)
+
+    canvas = np.zeros((scale, scale * len(video), 3), np.uint8)
+    for i in range(len(video)):
+        canvas[0:scale, scale * i:scale * (i + 1)] = draw_skeleton_pic(video[i])
+        if i > 0:
+            for j in range(25):
+                if j in [15, 16, 17, 18]:
+                    continue
+                cur_x, cur_y, cur_c = scale * i + int(scale * video[i, j, 0]), int(scale * video[i, j, 1]), video[
+                    i, j, 2]
+                prv_x, prv_y, prv_c = scale * (i - 1) + int(scale * video[i - 1, j, 0]), int(
+                    scale * video[i - 1, j, 1]), video[i - 1, j, 2]
+                if cur_c == 0 or prv_c == 0:
+                    continue
+                cv2.line(canvas, (cur_x, cur_y), (prv_x, prv_y), white, thickness=1)
+    # cv2.namedWindow("Canvas", cv2.WINDOW_FREERATIO)
+    # cv2.imshow("Canvas", canvas)
+    # cv2.waitKey(0)
+    return canvas
+
+
+def tracks_to_videos(tracks, num_image):
+    videos = []
+    for i in range(len(tracks)):
+        video = []
+        for j in range(num_image):
+            frame = draw_skeleton_pic(tracks[i, j])
+            video.append(frame)
+        videos.append(video)
+    return np.array(videos)
+
+
+def tracks_to_STimages(tracks):
+    STimages = []
+    for i in range(len(tracks)):
+        STimage = draw_ST_skeleton_pic(tracks[i])
+        STimages.append(STimage)
+    return np.array(STimages)
+
+
+# valid_STimages = tracks_to_STimages(valid_tracks)
+# np.save("gitignore/npy/16image_noHMDB_noEmptyFrame/valid_STimages", valid_STimages)
+# print(valid_STimages.shape)
+#
+# test_STimages = tracks_to_STimages(test_tracks)
+# np.save("gitignore/npy/16image_noHMDB_noEmptyFrame/test_STimages", test_STimages)
+# print(test_STimages.shape)
+#
+# train_STimages = tracks_to_STimages(train_tracks)
+# np.save("gitignore/npy/16image_noHMDB_noEmptyFrame/train_STimages", train_STimages)
+# print(train_STimages.shape)
+#
+#
+# train_skeleton_videos = tracks_to_videos(train_tracks, 16)
+# np.save("gitignore/npy/16image_noHMDB_noEmptyFrame/train_skeleton_videos", train_skeleton_videos)
+# print(train_skeleton_videos.shape)
+#
+# test_skeleton_videos = tracks_to_videos(test_tracks, 16)
+# np.save("gitignore/npy/16image_noHMDB_noEmptyFrame/test_skeleton_videos", test_skeleton_videos)
+# print(test_skeleton_videos.shape)
+#
+# valid_skeleton_videos = tracks_to_videos(valid_tracks, 16)
+# np.save("gitignore/npy/16image_noHMDB_noEmptyFrame/valid_skeleton_videos", valid_skeleton_videos)
+# print(valid_skeleton_videos.shape)
+# videos = np.load("gitignore/npy/16image_noHMDB_noEmptyFrame/test_skeleton_videos.npy")
+# labels = np.load("gitignore/npy/16image_noHMDB_noEmptyFrame/test_lables.npy")
+# for i in range(len(videos)):
+#     if labels[i] == 0:
+#         for j in range(16):
+#             cv2.imshow('.',videos[i,j])
+#             cv2.waitKey(0)
+
+dataset_path = "gitignore/npy/32image_noHMDB_noEmptyFrame/"
+num_image = 32
+
+
+def load_np_data():
+    train_tracks = np.load(dataset_path + "/train_tracks.npy")
+    train_lables = np.load(dataset_path + "/train_lables.npy")
+
+    valid_tracks = np.load(dataset_path + "/valid_tracks.npy")
+    valid_lables = np.load(dataset_path + "/valid_lables.npy")
+
+    test_tracks = np.load(dataset_path + "/test_tracks.npy")
+    test_lables = np.load(dataset_path + "/test_lables.npy")
+    return (train_tracks, train_lables), (valid_tracks, valid_lables), (test_tracks, test_lables)
+
+
+# (train_tracks, train_labels), (valid_tracks, valid_labels), (test_tracks, test_labels) = load_np_data()
+# print(train_tracks.shape)
+
+def get_diff(prv_landmark, cur_landmark):
+    diff = []
+    for i in range(len(prv_landmark)):
+        prv_x, prv_y, prv_c = prv_landmark[i]
+        cur_x, cur_y, cur_c = cur_landmark[i]
+        dx = cur_x - prv_x
+        dy = cur_y - prv_y
+        if cur_c == 0 or prv_c == 0:
+            diff.append([0, 0])
+        else:
+            diff.append([dx, dy])
+    return np.array(diff)
+
+
+def get_cart_coord(landmark):
+    cart_coord = []
+    for i in range(len(landmark)):
+        x, y, c = landmark[i]
+        cart_coord.append([x, y])
+    return np.array(cart_coord)
+
+
+def get_dataset_diff_based_CNN(tracks, num_image):
+    motions = []
+    coords = []
+    for i in range(len(tracks)):
+        coord = []
+        motion = []
+        for j in range(num_image):
+            landmark = tracks[i, j]
+            coord.append(get_cart_coord(landmark))
+            if j > 0:
+                motion.append(get_diff(tracks[i, j - 1], landmark))
+        motions.append(motion)
+        coords.append(coord)
+    return np.array(coords), np.array(motions)
+
+
+# train_coords, train_motions = get_dataset_diff_based_CNN(train_tracks, num_image)
+# np.save(dataset_path + 'train_coords', train_coords)
+# np.save(dataset_path + 'train_motions', train_motions)
+# print(train_coords.shape, train_motions.shape)
+#
+# valid_coords, valid_motions = get_dataset_diff_based_CNN(valid_tracks, num_image)
+# np.save(dataset_path + 'valid_coords', valid_coords)
+# np.save(dataset_path + 'valid_motions', valid_motions)
+# print(valid_coords.shape, valid_motions.shape)
+#
+# test_coords, test_motions = get_dataset_diff_based_CNN(test_tracks, num_image)
+# np.save(dataset_path + 'test_coords', test_coords)
+# np.save(dataset_path + 'test_motions', test_motions)
+# print(test_coords.shape, test_motions.shape)
