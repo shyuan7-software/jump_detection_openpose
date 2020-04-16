@@ -52,7 +52,7 @@ Bonus points:
 &#8195;Connect the new (CNN based) model with the current model (which takes body-landmarks as input), try to keep the accuracy higher than 85%;
 
 ## Improvement of submission-3:
-1. Designed a CNN based two-stream CNN model, which takes orignial RGB video frames as input, based on the [paper](https://papers.nips.cc/paper/5353-two-stream-convolutional-networks-for-action-recognition-in-videos.pdf)
+1. Designed a CNN based model, which takes orignial RGB video frames as input, based on the [paper](https://papers.nips.cc/paper/5353-two-stream-convolutional-networks-for-action-recognition-in-videos.pdf)
 2. Designed a CNN based model, which takes the skeleton data as input, based on the [paper](https://arxiv.org/pdf/1704.07595.pdf)
 3. Trained the model which takes skeleton data as input,and it has higher than 95% accuarcy
 
