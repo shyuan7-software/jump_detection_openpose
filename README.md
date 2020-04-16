@@ -58,7 +58,7 @@ Bonus points:
 
 ## Improving direction on the fourth submission:
 Main tasks:   
-&#8195;Fuse the CNN based model and the RNN based model, to achieve a higher accuarcy  
+&#8195;Fuse the CNN based model and the RNN based model, to achieve a better performance in real life application
 &#8195;Adjust the hyperparameter for the CNN based model and the RNN based model, so they will have an optimal performance  
 &#8195;Do experiment with CNN which takes RGB video frame as input, to know whether CNN can extract the feature of the distance between feets and ground. If yes, include it to the model.
   
