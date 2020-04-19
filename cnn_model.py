@@ -1,3 +1,4 @@
+# The model is based on https://arxiv.org/pdf/1704.07595.pdf
 import os
 import keras
 import matplotlib.pyplot as plt
@@ -15,6 +16,8 @@ plt.switch_backend("agg")
 path = "model/"
 dataset_path = "gitignore/npy/32image_noHMDB_noEmptyFrame/"
 num_image = 32
+
+# Load dataset
 def load_np_data():
     train_tracks = np.load(dataset_path+"/train_tracks.npy")
     train_lables = np.load(dataset_path+"/train_lables.npy")
@@ -151,6 +154,7 @@ test_loss, test_acc = best_model.evaluate([test_coords, test_motions], test_labe
 print('Best test_acc:', test_acc)
 print('Best test_loss:', test_loss)
 
+# Save the test accuracy and loss to a text file
 f.write('Best test_acc:' + str(test_acc))
 f.write('\n')
 f.write('Best test_loss:' + str(test_loss))

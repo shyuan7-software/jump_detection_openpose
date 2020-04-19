@@ -1,3 +1,5 @@
+# Test the model on test dataset
+
 from keras.models import load_model
 from load_data import load_dataset, load_videos_tracks, load_all_videos, get_dataset_diff_based_CNN
 import h5py

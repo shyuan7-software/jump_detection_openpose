@@ -234,7 +234,7 @@ print(test_lables.shape)
 # np.save("gitignore/npy/16image_noHMDB_noEmptyFrame/test_lables", test_lables)
 # print(test_videos.shape, test_tracks.shape, test_lables.shape)
 
-
+# Transfering body landmarks to a temporal sequence, which is described in https://arxiv.org/abs/1704.02581
 def get_temp_seq_part(tracks, part_indexs, num_image):
     # part_indexs:
     # left arm:     [2, 3, 4]
@@ -255,7 +255,7 @@ def get_temp_seq_part(tracks, part_indexs, num_image):
     temp_seq_part = temp_seq_part.reshape(len(tracks), num_image, len(part_indexs) * 2)
     return temp_seq_part
 
-
+# Transfering body landmarks to temporal sequences, which is described in https://arxiv.org/abs/1704.02581
 def get_temp_seq(tracks, num_image):
     # part_indexs:
     # left_arm:     [2, 3, 4]
@@ -274,7 +274,7 @@ def get_temp_seq(tracks, num_image):
             temp_seq_lleg,
             temp_seq_rleg)
 
-
+# Transfering body landmarks to a spatial sequence, which is described in https://arxiv.org/abs/1704.02581
 def get_spat_seq(tracks, num_image):
     '''
     chain sequence:
@@ -305,7 +305,7 @@ def get_spat_seq(tracks, num_image):
     spat_seq = spat_seq.reshape(len(tracks), len(chain_seq), window_size * 2)
     return spat_seq
 
-
+# A customized layer for fusing temporal stream and spatial stream, which is described in https://arxiv.org/abs/1704.02581
 class WeightedSum(Layer):
     def __init__(self, a, **kwargs):
         self.a = a
@@ -322,7 +322,9 @@ class WeightedSum(Layer):
         base_config = super(WeightedSum, self).get_config()
         return dict(list(base_config.items()) + list(config.items()))
 
-
+# Generate a number of optical flow frames for a video
+# If generated successfully, return a list of optial flow frames and True
+# Else return a empty list and False
 def optical_flow(video_path, num_image):
     cap = cv2.VideoCapture(video_path)
     if not cap.isOpened():
@@ -375,6 +377,8 @@ def optical_flow(video_path, num_image):
 
 
 # optical_flow('gitignore/dataset/clips/test/jump/jump104.mp4', 10)
+
+# Sample one frame from one video,
 def single_frame(video_path):
     cap = cv2.VideoCapture(video_path)
     if not cap.isOpened():
@@ -392,6 +396,8 @@ def single_frame(video_path):
 
 # single_frame('gitignore/dataset/clips/test/jump/jump104.mp4')
 
+# Load dataset for the input of the model, which is described in
+# https://papers.nips.cc/paper/5353-two-stream-convolutional-networks-for-action-recognition-in-videos.pdf
 def load_flows_frame(videos_dir, num_image):
     dirs = os.listdir(videos_dir)
     flows = []
@@ -415,6 +421,8 @@ def load_flows_frame(videos_dir, num_image):
 # a, b, c = load_flows_frame('gitignore/dataset/clips/test/jump/', 2)
 # print(a.shape, b.shape, c.shape)
 
+# Load train/valid/test dataset
+# https://papers.nips.cc/paper/5353-two-stream-convolutional-networks-for-action-recognition-in-videos.pdf
 def load_all_flows_frame(video_dir, num_image):
     videoset_dir_0 = video_dir + "jump/"  # class jump
     videoset_dir_1 = video_dir + "others/"  # class others
@@ -435,6 +443,8 @@ def load_all_flows_frame(video_dir, num_image):
 # a, b, c = load_all_flows_frame('gitignore/dataset/clips/train/', 10)
 # print(a.shape, b.shape, c.shape)
 
+# Load all dataset for the model decribed in
+# # https://papers.nips.cc/paper/5353-two-stream-convolutional-networks-for-action-recognition-in-videos.pdf
 def load_dataset_CNN(video_dir, num_image):
     train_video_dir = video_dir + "train/"
     valid_video_dir = video_dir + "valid/"
@@ -470,6 +480,7 @@ def load_dataset_CNN(video_dir, num_image):
 # np.save("gitignore/npy/10imgae_noHMDB_cnn/test_lables", test_lables)
 # print(test_flows.shape, test_frames.shape, test_lables.shape)
 
+# Draw the picture of human body, based on body landmark
 def draw_skeleton_pic(landmark, scale=224):
     colors = [(0, 255, 0), (0, 0, 255), (255, 0, 0)]
     edges = np.zeros((scale, scale))
@@ -492,7 +503,7 @@ def draw_skeleton_pic(landmark, scale=224):
     # print(type(canvas))
     return canvas
 
-
+# Draw human body of all frames on a convas, based on body landmarks
 def draw_ST_skeleton_pic(video, scale=224):
     white = (255, 255, 255)
 
@@ -516,6 +527,7 @@ def draw_ST_skeleton_pic(video, scale=224):
     return canvas
 
 
+# Transfering body landmarks dataset to the dataset that contains the image drawed based on body landmarks
 def tracks_to_videos(tracks, num_image):
     videos = []
     for i in range(len(tracks)):
@@ -526,7 +538,7 @@ def tracks_to_videos(tracks, num_image):
         videos.append(video)
     return np.array(videos)
 
-
+# Transfering body landmarks dataset to the dataset that contains the image drawed based on body landmarks
 def tracks_to_STimages(tracks):
     STimages = []
     for i in range(len(tracks)):
@@ -570,7 +582,7 @@ def tracks_to_STimages(tracks):
 dataset_path = "gitignore/npy/32image_noHMDB_noEmptyFrame/"
 num_image = 32
 
-
+# Load dataset through loading .npy files, much faster than loading original video and body landmark files
 def load_np_data():
     train_tracks = np.load(dataset_path + "/train_tracks.npy")
     train_lables = np.load(dataset_path + "/train_lables.npy")
@@ -586,6 +598,8 @@ def load_np_data():
 # (train_tracks, train_labels), (valid_tracks, valid_labels), (test_tracks, test_labels) = load_np_data()
 # print(train_tracks.shape)
 
+# Get difference between two frames of body landmarks, used in the model of
+# https://arxiv.org/pdf/1704.07595.pdf
 def get_diff(prv_landmark, cur_landmark):
     diff = []
     for i in range(len(prv_landmark)):
@@ -599,7 +613,8 @@ def get_diff(prv_landmark, cur_landmark):
             diff.append([dx, dy])
     return np.array(diff)
 
-
+# Get Cartesian Coordinates, based on body landmark, used in the model of
+# https://arxiv.org/pdf/1704.07595.pdf
 def get_cart_coord(landmark):
     cart_coord = []
     for i in range(len(landmark)):
@@ -607,7 +622,8 @@ def get_cart_coord(landmark):
         cart_coord.append([x, y])
     return np.array(cart_coord)
 
-
+# Transfering original body landmark dataset, to the dataset that can be used in the model of
+# https://arxiv.org/pdf/1704.07595.pdf
 def get_dataset_diff_based_CNN(tracks, num_image):
     motions = []
     coords = []

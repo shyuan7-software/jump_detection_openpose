@@ -1,5 +1,6 @@
-import os
+# The model is based on https://arxiv.org/abs/1704.02581
 
+import os
 import keras
 import matplotlib.pyplot as plt
 import numpy as np
@@ -15,6 +16,8 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 # Define the custom layer
 # tf.disable_v2_behavior()
+
+# The chain_seq is the order of traversing skeleton joints
 chain_seq = [1, 2, 3, 4, 3, 2,
              1, 5, 6, 7, 6, 5,
              1, 0, 1, 8,
@@ -59,7 +62,7 @@ window_size = num_image // 4
 (train_videos, train_tracks, train_labels), (valid_videos, valid_tracks, valid_labels), (
     test_videos, test_tracks, test_labels) = load_np_data(num_image)
 
-
+# Transfering landmarks data to temporal input and spatial input
 def preprocess_data(train_tracks, valid_tracks, test_tracks, num_image):
     train_temp_seqs = get_temp_seq(train_tracks, num_image)
     valid_temp_seqs = get_temp_seq(valid_tracks, num_image)
@@ -166,7 +169,6 @@ plt.legend()
 plt.show()
 plt.savefig(path + model_name + '_figure.png')
 
-# 5. predict on test
 # 5. predict on test
 test_loss, test_acc = model.evaluate(
     [test_temp_larm, test_temp_rarm, test_temp_trunk, test_temp_lleg, test_temp_rleg, test_spat_seq], test_labels,

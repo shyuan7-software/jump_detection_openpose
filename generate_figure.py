@@ -1,3 +1,5 @@
+# Take video and body landmarks as input, and output a figure and a JSON file
+
 import json
 import os
 from math import ceil
@@ -19,7 +21,6 @@ chain_seq = [1, 2, 3, 4, 3, 2,
              12, 13, 14, 21, 19, 20, 14, 13, 12, 8,
              1]
 
-
 # X = [0, 3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42, 45, 48, 51, 54, 57, 60, 63, 66, 69, 72, 75, 78, 81, 84, 87]
 # Y = [0, 3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42, 45, 48, 51, 54, 57, 60, 63, 66, 69, 72, 75, 78, 81, 84, 87]
 
@@ -30,8 +31,8 @@ chain_seq = [1, 2, 3, 4, 3, 2,
 plt.switch_backend("agg")
 
 
-
-
+# Take path to a video and  its body landmark files, transfering them to an arrary of clips and body landmarks
+# Each element is a 3 seconds clip
 def generate_clips_tracks(video_path, landmark_path, num_image):
     landmark_path += '/'
     video = cv2.VideoCapture(video_path)
@@ -77,6 +78,8 @@ def generate_clips_tracks(video_path, landmark_path, num_image):
     return np.array(clips_per3s), np.array(tracks_per3s)
 
 
+# Gievn the video path, landmark files' path, and model's path, number of frames you want to sample from each 3
+# seconds clip, output a figure and a JSON file This function works for rnn_model.py
 def generate_figure(video_path, landmark_path, model_path, num_image):
     clips, tracks = generate_clips_tracks(video_path, landmark_path, num_image)
     (temp_seq_larm, temp_seq_rarm, temp_seq_trunk, temp_seq_lleg, temp_seq_rleg) = get_temp_seq(tracks, num_image)
@@ -111,6 +114,9 @@ def generate_figure(video_path, landmark_path, model_path, num_image):
         json.dump(temp_dict, f)
     print('The result is located in ./output/' + videoname + '.json and ./output/' + videoname + '.png')
 
+
+# Gievn the video path, landmark files' path, and model's path, number of frames you want to sample from each 3
+# seconds clip, output a figure and a JSON file This function works for cnn_model.py
 def generate_figure_CNN(video_path, landmark_path, model_path, num_image):
     clips, tracks = generate_clips_tracks(video_path, landmark_path, num_image)
     coords, motions = get_dataset_diff_based_CNN(tracks, num_image)
@@ -144,11 +150,12 @@ def generate_figure_CNN(video_path, landmark_path, model_path, num_image):
         json.dump(temp_dict, f)
     print('The result is located in ./output/' + videoname + '.json and ./output/' + videoname + '.png')
 
+
 # video_path: where is your video?
 # landmark_path: where is the video's corresponding landmark directory?
 if __name__ == '__main__':
     v_path = sys.argv[1]  # 'sample/no_jump.mp4'
     l_path = sys.argv[2]  # 'sample/no_jump'
     generate_figure_CNN(video_path=v_path, landmark_path=l_path,
-                    model_path='model/submission3/CNN_model_best.h5',
-                    num_image=32)
+                        model_path='model/submission3/CNN_model_best.h5',
+                        num_image=32)
