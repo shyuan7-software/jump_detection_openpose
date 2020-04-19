@@ -1,13 +1,6 @@
 # Author: Shaohua Yuan
 # Email: shyuan@tamu.edu
-# In order to load dataset, please format the file directory as following:
-# dataset_dir --> train --> jump   --> (lots of video, the name of video should contain "jump")
-#                          others --> (lots of video, the name of video should not contain "jump")
-#            --> valid --> jump   --> (lots of video, the name of video should contain "jump")
-#                          others --> (lots of video, the name of video should not contain "jump")
-#            --> test  --> jump   --> (lots of video, the name of video should contain "jump")
-#                          others --> (lots of video, the name of video should not contain "jump")
-# Then, just run load_all_dataset(dataset_dir), it will return train, valid, and test dataset in order
+
 import json as js
 import os
 import random
