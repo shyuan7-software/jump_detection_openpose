@@ -4,7 +4,6 @@
 import json as js
 import os
 import random
-
 import cv2
 import numpy as np
 from keras.engine import Layer
@@ -205,27 +204,28 @@ print(test_lables.shape)
 '''
 
 
-#
-#
-# (train_videos, train_tracks, train_lables), (valid_videos, valid_tracks, valid_lables), (
-#     test_videos, test_tracks, test_lables) \
-#     = load_dataset(video_dir="gitignore/dataset_noHMDB/clips/", landmark_dir="gitignore/dataset_noHMDB/landmarks/",
-#                    num_image=16)
-#
-# np.save("gitignore/npy/16image_noHMDB_noEmptyFrame/train_videos", train_videos)
-# np.save("gitignore/npy/16image_noHMDB_noEmptyFrame/train_tracks", train_tracks)
-# np.save("gitignore/npy/16image_noHMDB_noEmptyFrame/train_lables", train_lables)
-# print(train_videos.shape, train_tracks.shape, train_lables.shape)
-#
-# np.save("gitignore/npy/16image_noHMDB_noEmptyFrame/valid_videos", valid_videos)
-# np.save("gitignore/npy/16image_noHMDB_noEmptyFrame/valid_tracks", valid_tracks)
-# np.save("gitignore/npy/16image_noHMDB_noEmptyFrame/valid_lables", valid_lables)
-# print(valid_videos.shape, valid_tracks.shape, valid_lables.shape)
-#
-# np.save("gitignore/npy/16image_noHMDB_noEmptyFrame/test_videos", test_videos)
-# np.save("gitignore/npy/16image_noHMDB_noEmptyFrame/test_tracks", test_tracks)
-# np.save("gitignore/npy/16image_noHMDB_noEmptyFrame/test_lables", test_lables)
-# print(test_videos.shape, test_tracks.shape, test_lables.shape)
+'''
+(train_videos, train_tracks, train_lables), (valid_videos, valid_tracks, valid_lables), (
+    test_videos, test_tracks, test_lables) \
+    = load_dataset(video_dir="gitignore/dataset_noHMDB/clips/", landmark_dir="gitignore/dataset_noHMDB/landmarks/",
+                   num_image=16)
+
+np.save("gitignore/npy/16image_noHMDB_noEmptyFrame/train_videos", train_videos)
+np.save("gitignore/npy/16image_noHMDB_noEmptyFrame/train_tracks", train_tracks)
+np.save("gitignore/npy/16image_noHMDB_noEmptyFrame/train_lables", train_lables)
+print(train_videos.shape, train_tracks.shape, train_lables.shape)
+
+np.save("gitignore/npy/16image_noHMDB_noEmptyFrame/valid_videos", valid_videos)
+np.save("gitignore/npy/16image_noHMDB_noEmptyFrame/valid_tracks", valid_tracks)
+np.save("gitignore/npy/16image_noHMDB_noEmptyFrame/valid_lables", valid_lables)
+print(valid_videos.shape, valid_tracks.shape, valid_lables.shape)
+
+np.save("gitignore/npy/16image_noHMDB_noEmptyFrame/test_videos", test_videos)
+np.save("gitignore/npy/16image_noHMDB_noEmptyFrame/test_tracks", test_tracks)
+np.save("gitignore/npy/16image_noHMDB_noEmptyFrame/test_lables", test_lables)
+print(test_videos.shape, test_tracks.shape, test_lables.shape)
+
+'''
 
 # Transfering body landmarks to a temporal sequence, which is described in https://arxiv.org/abs/1704.02581
 def get_temp_seq_part(tracks, part_indexs, num_image):
@@ -278,6 +278,7 @@ def get_spat_seq(tracks, num_image):
     3.left foot to right foot:
         23, 22, 24, 11, 10, 9, 12, 13, 14, 21, 19, 20
     '''
+    # The chain_seq is the order of traversing skeleton joints
     chain_seq = [1, 2, 3, 4, 3, 2,
                  1, 5, 6, 7, 6, 5,
                  1, 0, 1, 8,

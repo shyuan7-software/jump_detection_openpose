@@ -28,6 +28,7 @@ chain_seq = [1, 2, 3, 4, 3, 2,
 plt.switch_backend("agg")
 
 
+# Load dataset through loading .npy files, much faster than loading original video and body landmark files
 def load_np_data(num_image):
     train_videos = np.load('gitignore/npy/' + str(num_image) + "image_noHMDB/train_videos.npy")
     train_tracks = np.load('gitignore/npy/' + str(num_image) + "image_noHMDB/train_tracks.npy")
@@ -45,14 +46,14 @@ def load_np_data(num_image):
 
 
 # 0. intialization
-num_image = 32
+num_image = 32  # number of frames, sampled from each clip
 model_name = 'rnn_model'
-path = "model/"
+path = "model/"  # the dir where you want to save your output and trained-model
 batch_size = 64
 epochs = 1
 dropout = 0.5
 RNN_size = 512
-window_size = num_image // 4
+window_size = num_image // 4  # the size of window in spatial input, as described in https://arxiv.org/abs/1704.02581
 # 1. prepare for data
 
 '''(train_videos, train_tracks, train_lables), (valid_videos, valid_tracks, valid_lables), (
@@ -61,6 +62,7 @@ window_size = num_image // 4
 
 (train_videos, train_tracks, train_labels), (valid_videos, valid_tracks, valid_labels), (
     test_videos, test_tracks, test_labels) = load_np_data(num_image)
+
 
 # Transfering landmarks data to temporal input and spatial input
 def preprocess_data(train_tracks, valid_tracks, test_tracks, num_image):
@@ -148,8 +150,8 @@ history = model.fit(
     callbacks=callbacks_list,
     # verbose=2,
     validation_data=(
-    [valid_temp_larm, valid_temp_rarm, valid_temp_trunk, valid_temp_lleg, valid_temp_rleg, valid_spat_seq],
-    valid_labels))
+        [valid_temp_larm, valid_temp_rarm, valid_temp_trunk, valid_temp_lleg, valid_temp_rleg, valid_spat_seq],
+        valid_labels))
 # 4. see validation loss and acc
 history_dict = history.history
 loss_values = history_dict['loss']

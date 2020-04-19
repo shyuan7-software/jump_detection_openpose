@@ -14,6 +14,7 @@ import matplotlib.pyplot as plt
 import cv2
 import sys
 
+# The chain_seq is the order of traversing skeleton joints
 chain_seq = [1, 2, 3, 4, 3, 2,
              1, 5, 6, 7, 6, 5,
              1, 0, 1, 8,
@@ -24,9 +25,6 @@ chain_seq = [1, 2, 3, 4, 3, 2,
 # X = [0, 3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42, 45, 48, 51, 54, 57, 60, 63, 66, 69, 72, 75, 78, 81, 84, 87]
 # Y = [0, 3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42, 45, 48, 51, 54, 57, 60, 63, 66, 69, 72, 75, 78, 81, 84, 87]
 
-# video_path = 'mini_dataset/clips/test/jump/jump4.mp4'
-# landmark_path = 'mini_dataset/landmarks/test/jump/jump4.mp4'
-# model_path = 'video_track_best.h5'
 
 plt.switch_backend("agg")
 
@@ -151,6 +149,9 @@ def generate_figure_CNN(video_path, landmark_path, model_path, num_image):
     print('The result is located in ./output/' + videoname + '.json and ./output/' + videoname + '.png')
 
 
+# video_path = 'mini_dataset/clips/test/jump/jump4.mp4'
+# landmark_path = 'mini_dataset/landmarks/test/jump/jump4.mp4'
+# model_path = 'video_track_best.h5'
 # video_path: where is your video?
 # landmark_path: where is the video's corresponding landmark directory?
 if __name__ == '__main__':

@@ -10,6 +10,7 @@ from keras.layers import Flatten, Dense, Dropout, concatenate, Conv2D, \
 from keras.utils import plot_model
 from load_data import get_dataset_diff_based_CNN
 import os
+
 os.environ["PATH"] += os.pathsep + 'C:/Program Files (x86)/Graphviz2.38/bin/'
 
 plt.switch_backend("agg")
@@ -17,24 +18,29 @@ path = "model/"
 dataset_path = "gitignore/npy/32image_noHMDB_noEmptyFrame/"
 num_image = 32
 
-# Load dataset
+
+# Load dataset through loading .npy files, much faster than loading original video and body landmark files
 def load_np_data():
-    train_tracks = np.load(dataset_path+"/train_tracks.npy")
-    train_lables = np.load(dataset_path+"/train_lables.npy")
+    train_tracks = np.load(dataset_path + "/train_tracks.npy")
+    train_lables = np.load(dataset_path + "/train_lables.npy")
 
-    valid_tracks = np.load(dataset_path+"/valid_tracks.npy")
-    valid_lables = np.load(dataset_path+"/valid_lables.npy")
+    valid_tracks = np.load(dataset_path + "/valid_tracks.npy")
+    valid_lables = np.load(dataset_path + "/valid_lables.npy")
 
-    test_tracks = np.load(dataset_path+"/test_tracks.npy")
-    test_lables = np.load(dataset_path+"/test_lables.npy")
+    test_tracks = np.load(dataset_path + "/test_tracks.npy")
+    test_lables = np.load(dataset_path + "/test_lables.npy")
     return (train_tracks, train_lables), (valid_tracks, valid_lables), (test_tracks, test_lables)
-# 1. prepare for data
+
+
+# 0. prepare for data
 
 (train_tracks, train_labels), (valid_tracks, valid_labels), (test_tracks, test_labels) = load_np_data()
 print('Train:', train_tracks.shape, train_labels.shape)
 print('Valid:', valid_tracks.shape, valid_labels.shape)
 print('Test:', test_tracks.shape, test_labels.shape)
 
+# Transfering original body landmark dataset, to the dataset that can be used in the model of
+# https://arxiv.org/pdf/1704.07595.pdf
 train_coords, train_motions = get_dataset_diff_based_CNN(train_tracks, num_image)
 print(train_coords.shape, train_motions.shape)
 
@@ -44,14 +50,15 @@ print(valid_coords.shape, valid_motions.shape)
 test_coords, test_motions = get_dataset_diff_based_CNN(test_tracks, num_image)
 print(test_coords.shape, test_motions.shape)
 
-# 0. intialization
+# 1. intialization
 batch_size = 64
 epochs = 500
 dropout = 0.5
 model_name = 'CNN_model'
+
 # 2. build network
-# 2.1 temporal input
-# 2.1.1
+# 2.1 coord_input
+
 coord_input = Input(shape=(32, 25, 2), name='coord_input')
 x = Dense(128)(coord_input)
 x = Dropout(dropout)(x)
@@ -67,6 +74,7 @@ x = Conv2D(64, (2, 2), activation='relu', strides=1)(x)
 x = MaxPooling2D((3, 3), strides=2)(x)
 x = Dropout(dropout)(x)
 
+# 2.2 motion_input
 motion_input = Input(shape=(31, 25, 2), name='motion_input')
 y = Dense(128)(motion_input)
 y = Dropout(dropout)(y)

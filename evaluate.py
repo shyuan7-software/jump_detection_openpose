@@ -11,12 +11,13 @@ from load_data import WeightedSum, get_temp_seq, get_spat_seq
 #os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 
-num_image=32
+num_image=32 # number of frames sampled from a 3 seconds clip
 model_name = 'model/submission3/CNN_model_best.h5'
 
 # test_videos, test_tracks, test_lables = load_all_videos("dataset/clips/test/",
 #                                                              "dataset/landmarks/test/", num_image)
 
+# Load test data and labels
 test_videos = np.load('gitignore/npy/' + str(num_image) + "image_noHMDB/test_videos.npy")
 test_tracks = np.load('gitignore/npy/' + str(num_image) + "image_noHMDB/test_tracks.npy")
 test_lables = np.load('gitignore/npy/' + str(num_image) + "image_noHMDB/test_lables.npy")
