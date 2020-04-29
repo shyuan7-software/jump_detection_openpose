@@ -1,4 +1,4 @@
-# Take video and body landmarks as input, and output a figure and a JSON file
+# Take video and body landmarks as input, and OUTPUT a figure and a JSON file
 
 import json
 import os
@@ -86,8 +86,8 @@ def generate_clips_tracks(video_path, landmark_path, num_image):
 
 def generate_figure(video_path, landmark_path, model_path, num_image):
     clips, tracks = generate_clips_tracks(video_path, landmark_path, num_image)
-    if 'output' not in os.listdir('./'):
-        os.mkdir('output')
+    if 'OUTPUT' not in os.listdir('./'):
+        os.mkdir('OUTPUT')
     print(clips.shape, tracks.shape)
     videoname = video_path.split("/")[-1]
     model = load_model(model_path)
@@ -106,25 +106,25 @@ def generate_figure(video_path, landmark_path, model_path, num_image):
     plt.ylabel("Possibility")
     plt.title("Jump detection")
     videoname += UIN
-    plt.savefig('./output/' + videoname + '.png', dpi=300)
+    plt.savefig('./OUTPUT/' + videoname + '.png', dpi=300)
     plt.show()
     # json
     temp_dict = {'jump': []}
     for i in range(len(clips)):
         temp_dict['jump'].append({str(X[i]) + 's to ' + str(X[i] + 3) + 's': str(Y[i])})
-    json_file = './output/' + videoname + '.json'
+    json_file = './OUTPUT/' + videoname + '.json'
     with open(json_file, 'w') as f:
         json.dump(temp_dict, f)
-    print('The result is located in ./output/' + videoname + '.json and ./output/' + videoname + '.png')
+    print('The result is located in ./OUTPUT/' + videoname + '.json and ./OUTPUT/' + videoname + '.png')
 
 # Gievn the video path, landmark files' path, and model's path, number of frames you want to sample from each 3
-# seconds clip, output a figure and a JSON file This function works for rnn_model.py
+# seconds clip, OUTPUT a figure and a JSON file This function works for rnn_model.py
 def generate_figure_RNN(video_path, landmark_path, model_path, num_image):
     clips, tracks = generate_clips_tracks(video_path, landmark_path, num_image)
     (temp_seq_larm, temp_seq_rarm, temp_seq_trunk, temp_seq_lleg, temp_seq_rleg) = get_temp_seq(tracks, num_image)
     spat_seq = get_spat_seq(tracks, num_image)
-    if 'output' not in os.listdir('./'):
-        os.mkdir('output')
+    if 'OUTPUT' not in os.listdir('./'):
+        os.mkdir('OUTPUT')
     print(clips.shape, tracks.shape)
     videoname = video_path.split("/")[-1]
     model = load_model(model_path, custom_objects={"WeightedSum": WeightedSum})
@@ -143,25 +143,25 @@ def generate_figure_RNN(video_path, landmark_path, model_path, num_image):
     plt.ylabel("Possibility")
     plt.title("Jump detection")
     videoname += UIN
-    plt.savefig('./output/' + videoname + '.png', dpi=300)
+    plt.savefig('./OUTPUT/' + videoname + '.png', dpi=300)
     plt.show()
     # json
     temp_dict = {'jump': []}
     for i in range(len(clips)):
         temp_dict['jump'].append({str(X[i]) + 's to ' + str(X[i] + 3) + 's': str(Y[i])})
-    json_file = './output/' + videoname + '.json'
+    json_file = './OUTPUT/' + videoname + '.json'
     with open(json_file, 'w') as f:
         json.dump(temp_dict, f)
-    print('The result is located in ./output/' + videoname + '.json and ./output/' + videoname + '.png')
+    print('The result is located in ./OUTPUT/' + videoname + '.json and ./OUTPUT/' + videoname + '.png')
 
 
 # Gievn the video path, landmark files' path, and model's path, number of frames you want to sample from each 3
-# seconds clip, output a figure and a JSON file This function works for cnn_model.py
+# seconds clip, OUTPUT a figure and a JSON file This function works for cnn_model.py
 def generate_figure_CNN(video_path, landmark_path, model_path, num_image):
     clips, tracks = generate_clips_tracks(video_path, landmark_path, num_image)
     coords, motions = get_dataset_diff_based_CNN(tracks, num_image)
-    if 'output' not in os.listdir('./'):
-        os.mkdir('output')
+    if 'OUTPUT' not in os.listdir('./'):
+        os.mkdir('OUTPUT')
     print(coords.shape, motions.shape)
     videoname = video_path.split("/")[-1]
     model = load_model(model_path)
@@ -180,16 +180,16 @@ def generate_figure_CNN(video_path, landmark_path, model_path, num_image):
     plt.ylabel("Possibility")
     plt.title("Jump detection")
     videoname += UIN
-    plt.savefig('./output/' + videoname + '.png', dpi=300)
+    plt.savefig('./OUTPUT/' + videoname + '.png', dpi=300)
     plt.show()
     # json
     temp_dict = {'jump': []}
     for i in range(len(clips)):
         temp_dict['jump'].append({str(X[i]) + 's to ' + str(X[i] + 3) + 's': str(Y[i])})
-    json_file = './output/' + videoname + '.json'
+    json_file = './OUTPUT/' + videoname + '.json'
     with open(json_file, 'w') as f:
         json.dump(temp_dict, f)
-    print('The result is located in ./output/' + videoname + '.json and ./output/' + videoname + '.png')
+    print('The result is located in ./OUTPUT/' + videoname + '.json and ./OUTPUT/' + videoname + '.png')
 
 
 def generate_figure_ensemble(video_path, landmark_path, model_path, num_image):
@@ -197,8 +197,8 @@ def generate_figure_ensemble(video_path, landmark_path, model_path, num_image):
     (temp_seq_larm, temp_seq_rarm, temp_seq_trunk, temp_seq_lleg, temp_seq_rleg) = get_temp_seq(tracks, num_image)
     spat_seq = get_spat_seq(tracks, num_image)
     coords, motions = get_dataset_diff_based_CNN(tracks, num_image)
-    if 'output' not in os.listdir('./'):
-        os.mkdir('output')
+    if 'OUTPUT' not in os.listdir('./'):
+        os.mkdir('OUTPUT')
     print(clips.shape, tracks.shape)
     videoname = video_path.split("/")[-1]
     model = load_model(model_path, custom_objects={"WeightedSum": WeightedSum})
@@ -218,24 +218,24 @@ def generate_figure_ensemble(video_path, landmark_path, model_path, num_image):
     plt.ylabel("Possibility")
     plt.title("Jump detection")
     videoname += UIN
-    plt.savefig('./output/' + videoname + '.png', dpi=300)
+    plt.savefig('./OUTPUT/' + videoname + '.png', dpi=300)
     plt.show()
     # json
     temp_dict = {'jump': []}
     for i in range(len(clips)):
         temp_dict['jump'].append({str(X[i]) + 's to ' + str(X[i] + 3) + 's': str(Y[i])})
-    json_file = './output/' + videoname + '.json'
+    json_file = './OUTPUT/' + videoname + '.json'
     with open(json_file, 'w') as f:
         json.dump(temp_dict, f)
-    print('The result is located in ./output/' + videoname + '.json and ./output/' + videoname + '.png')
+    print('The result is located in ./OUTPUT/' + videoname + '.json and ./OUTPUT/' + videoname + '.png')
 
 
 # Gievn the video path, landmark files' path, and model's path, number of frames you want to sample from each 3
-# seconds clip, output a figure and a JSON file This function works for rnn_model.py
+# seconds clip, OUTPUT a figure and a JSON file This function works for rnn_model.py
 def generate_figure_3DResNet(video_path, landmark_path, model_path, num_image):
     clips, tracks = generate_clips_tracks(video_path, landmark_path, num_image)
-    if 'output' not in os.listdir('./'):
-        os.mkdir('output')
+    if 'OUTPUT' not in os.listdir('./'):
+        os.mkdir('OUTPUT')
     print(clips.shape, tracks.shape)
     videoname = video_path.split("/")[-1]
     model = load_model(model_path)
@@ -253,22 +253,22 @@ def generate_figure_3DResNet(video_path, landmark_path, model_path, num_image):
     plt.ylabel("Possibility")
     plt.title("Jump detection")
     videoname += UIN
-    plt.savefig('./output/' + videoname + '.png', dpi=300)
+    plt.savefig('./OUTPUT/' + videoname + '.png', dpi=300)
     plt.show()
     # json
     temp_dict = {'jump': []}
     for i in range(len(clips)):
         temp_dict['jump'].append({str(X[i]) + 's to ' + str(X[i] + 3) + 's': str(Y[i])})
-    json_file = './output/' + videoname + '.json'
+    json_file = './OUTPUT/' + videoname + '.json'
     with open(json_file, 'w') as f:
         json.dump(temp_dict, f)
-    print('The result is located in ./output/' + videoname + '.json and ./output/' + videoname + '.png')
+    print('The result is located in ./OUTPUT/' + videoname + '.json and ./OUTPUT/' + videoname + '.png')
 
 
 def generate_figure_3DResNet_onehot(video_path, landmark_path, model_path, num_image):
     clips, tracks = generate_clips_tracks(video_path, landmark_path, num_image)
-    if 'output' not in os.listdir('./'):
-        os.mkdir('output')
+    if 'OUTPUT' not in os.listdir('./'):
+        os.mkdir('OUTPUT')
     print(clips.shape, tracks.shape)
     videoname = video_path.split("/")[-1]
     model = load_model(model_path)
@@ -286,16 +286,16 @@ def generate_figure_3DResNet_onehot(video_path, landmark_path, model_path, num_i
     plt.ylabel("Possibility")
     plt.title("Jump detection")
     videoname += UIN
-    plt.savefig('./output/' + videoname + '.png', dpi=300)
+    plt.savefig('./OUTPUT/' + videoname + '.png', dpi=300)
     plt.show()
     # json
     temp_dict = {'jump': []}
     for i in range(len(clips)):
         temp_dict['jump'].append({str(X[i]) + 's to ' + str(X[i] + 3) + 's': str(Y[i])})
-    json_file = './output/' + videoname + '.json'
+    json_file = './OUTPUT/' + videoname + '.json'
     with open(json_file, 'w') as f:
         json.dump(temp_dict, f)
-    print('The result is located in ./output/' + videoname + '.json and ./output/' + videoname + '.png')
+    print('The result is located in ./OUTPUT/' + videoname + '.json and ./OUTPUT/' + videoname + '.png')
 
 
 # video_path = 'mini_dataset/clips/test/jump/jump4.mp4'
