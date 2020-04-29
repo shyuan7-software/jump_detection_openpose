@@ -21,7 +21,7 @@ chain_seq = [1, 2, 3, 4, 3, 2,
              9, 10, 11, 23, 22, 24, 11, 10, 9, 8,
              12, 13, 14, 21, 19, 20, 14, 13, 12, 8,
              1]
-
+UIN = '-629009213'
 # X = [0, 3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42, 45, 48, 51, 54, 57, 60, 63, 66, 69, 72, 75, 78, 81, 84, 87]
 # Y = [0, 3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42, 45, 48, 51, 54, 57, 60, 63, 66, 69, 72, 75, 78, 81, 84, 87]
 
@@ -110,6 +110,7 @@ def generate_figure_RNN(video_path, landmark_path, model_path, num_image):
     plt.xlabel("Time(s)")
     plt.ylabel("Possibility")
     plt.title("Jump detection")
+    videoname += UIN
     plt.savefig('./output/' + videoname + '.png', dpi=300)
     plt.show()
     # json
@@ -146,6 +147,7 @@ def generate_figure_CNN(video_path, landmark_path, model_path, num_image):
     plt.xlabel("Time(s)")
     plt.ylabel("Possibility")
     plt.title("Jump detection")
+    videoname += UIN
     plt.savefig('./output/' + videoname + '.png', dpi=300)
     plt.show()
     # json
@@ -157,6 +159,7 @@ def generate_figure_CNN(video_path, landmark_path, model_path, num_image):
         json.dump(temp_dict, f)
     print('The result is located in ./output/' + videoname + '.json and ./output/' + videoname + '.png')
 
+
 def generate_figure_ensemble(video_path, landmark_path, model_path, num_image):
     clips, tracks = generate_clips_tracks(video_path, landmark_path, num_image)
     (temp_seq_larm, temp_seq_rarm, temp_seq_trunk, temp_seq_lleg, temp_seq_rleg) = get_temp_seq(tracks, num_image)
@@ -167,7 +170,8 @@ def generate_figure_ensemble(video_path, landmark_path, model_path, num_image):
     print(clips.shape, tracks.shape)
     videoname = video_path.split("/")[-1]
     model = load_model(model_path, custom_objects={"WeightedSum": WeightedSum})
-    predictions = model.predict([coords, motions, temp_seq_larm, temp_seq_rarm, temp_seq_trunk, temp_seq_lleg, temp_seq_rleg, spat_seq])
+    predictions = model.predict(
+        [coords, motions, temp_seq_larm, temp_seq_rarm, temp_seq_trunk, temp_seq_lleg, temp_seq_rleg, spat_seq])
     Y = []
     for (i, p) in enumerate(predictions):
         Y.append(p[0])
@@ -181,6 +185,7 @@ def generate_figure_ensemble(video_path, landmark_path, model_path, num_image):
     plt.xlabel("Time(s)")
     plt.ylabel("Possibility")
     plt.title("Jump detection")
+    videoname += UIN
     plt.savefig('./output/' + videoname + '.png', dpi=300)
     plt.show()
     # json
@@ -191,6 +196,7 @@ def generate_figure_ensemble(video_path, landmark_path, model_path, num_image):
     with open(json_file, 'w') as f:
         json.dump(temp_dict, f)
     print('The result is located in ./output/' + videoname + '.json and ./output/' + videoname + '.png')
+
 
 # Gievn the video path, landmark files' path, and model's path, number of frames you want to sample from each 3
 # seconds clip, output a figure and a JSON file This function works for rnn_model.py
@@ -214,6 +220,7 @@ def generate_figure_3DResNet(video_path, landmark_path, model_path, num_image):
     plt.xlabel("Time(s)")
     plt.ylabel("Possibility")
     plt.title("Jump detection")
+    videoname += UIN
     plt.savefig('./output/' + videoname + '.png', dpi=300)
     plt.show()
     # json
@@ -246,6 +253,7 @@ def generate_figure_3DResNet_onehot(video_path, landmark_path, model_path, num_i
     plt.xlabel("Time(s)")
     plt.ylabel("Possibility")
     plt.title("Jump detection")
+    videoname += UIN
     plt.savefig('./output/' + videoname + '.png', dpi=300)
     plt.show()
     # json
@@ -270,8 +278,8 @@ if __name__ == '__main__':
     #                     model_path='gitignore/Final_submission/Ensemble_model_trainable_256B_relu_reg/Ensemble_model_trainable_256B_relu_reg_best.h5',
     #                     num_image=32)
     generate_figure_ensemble(video_path=v_path, landmark_path=l_path,
-                        model_path='model/Final_submission/Ensemble_model_trainable_256B_relu_reg/Ensemble_model_trainable_256B_relu_reg_best.h5',
-                        num_image=32)
+                             model_path='model/Final_submission/Ensemble_model_trainable_256B_relu_reg/Ensemble_model_trainable_256B_relu_reg_best.h5',
+                             num_image=32)
     # generate_figure_CNN(video_path=v_path, landmark_path=l_path,
     #                                 model_path='gitignore/Final_submission/AUGM_CNN_0.5D_256B/AUGM_CNN_0.5D_256B_best.h5',
     #                                 num_image=32)
