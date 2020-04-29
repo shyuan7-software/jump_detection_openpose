@@ -54,7 +54,7 @@ def generate_clips_tracks(video_path, landmark_path, num_image):
     for clip_id in range(clips_num):
         cur_clip = []
         cur_track = []
-        print('clip_id: ', clip_id)
+        #print('clip_id: ', clip_id)
         for i in range(int(clip_id * (frame_rate * 3)),
                        min(len(image_per_frame), ceil((clip_id + 1) * (frame_rate * 3)))):
             frame_num = min(len(image_per_frame), ceil((clip_id + 1) * (frame_rate * 3))) - int(
@@ -63,7 +63,7 @@ def generate_clips_tracks(video_path, landmark_path, num_image):
             if sample_rate == 0:
                 sample_rate += 1
             if int(sample_rate * len(cur_clip)) <= i - int(clip_id * (frame_rate * 3)):
-                print(i)
+                #print(i)
                 m, l = image_per_frame[i], np.array(decode_json(landmark_per_frame[i]))
                 # m = np.rot90(m, k=3)
                 # l = rotate90(l, k=3)
