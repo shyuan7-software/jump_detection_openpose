@@ -35,10 +35,7 @@
 #     download_file_from_google_drive(file_id, destination)
 import os
 import sys
-
 from google_drive_downloader import GoogleDriveDownloader as gdd
-
-from generate_figure import generate_figure_ensemble
 
 
 def download_video(video_name):
@@ -91,10 +88,7 @@ def download(video_name, landmark_name):
 
 if __name__ == "__main__":
     video_name = sys.argv[1]  # 'no_jump.mp4'
-    # video_name = 'no_jump.mp4'  # 'no_jump.mp4'
-    landmark_name = os.path.splitext(video_name)[0]
+    landmark_name = os.path.splitext(video_name)[0]  # ‘no_jump’
     res = download(video_name, landmark_name)
     if res:
-        generate_figure_ensemble(video_path='./' + video_name, landmark_path='./' + landmark_name,
-                                 model_path='model/Final_submission/Ensemble_model_trainable_256B_relu_reg/Ensemble_model_trainable_256B_relu_reg_best.h5',
-                                 num_image=32)
+        os.system('python generate_figure.py ' + video_name + ' ' + landmark_name)

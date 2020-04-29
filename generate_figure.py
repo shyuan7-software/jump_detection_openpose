@@ -84,6 +84,38 @@ def generate_clips_tracks(video_path, landmark_path, num_image):
 
     return np.array(clips_per3s), np.array(tracks_per3s)
 
+def generate_figure(video_path, landmark_path, model_path, num_image):
+    clips, tracks = generate_clips_tracks(video_path, landmark_path, num_image)
+    if 'output' not in os.listdir('./'):
+        os.mkdir('output')
+    print(clips.shape, tracks.shape)
+    videoname = video_path.split("/")[-1]
+    model = load_model(model_path)
+    predictions = model.predict([clips, tracks])
+    Y = []
+    for (i, p) in enumerate(predictions):
+        Y.append(p[0])
+    X = [3 * x for x in range(0, len(clips))]
+    fig = plt.figure()
+    plt.bar(X, Y, 3, align='edge', ec='c', ls='-.', lw=1, color='#EECFA1', tick_label=X)
+    plt.tick_params(labelsize=6)
+
+    for (x, y) in zip(X, Y):
+        plt.text(x, y + 0.01, str(round(y, 2)) + '', fontsize=6)
+    plt.xlabel("Time(s)")
+    plt.ylabel("Possibility")
+    plt.title("Jump detection")
+    videoname += UIN
+    plt.savefig('./output/' + videoname + '.png', dpi=300)
+    plt.show()
+    # json
+    temp_dict = {'jump': []}
+    for i in range(len(clips)):
+        temp_dict['jump'].append({str(X[i]) + 's to ' + str(X[i] + 3) + 's': str(Y[i])})
+    json_file = './output/' + videoname + '.json'
+    with open(json_file, 'w') as f:
+        json.dump(temp_dict, f)
+    print('The result is located in ./output/' + videoname + '.json and ./output/' + videoname + '.png')
 
 # Gievn the video path, landmark files' path, and model's path, number of frames you want to sample from each 3
 # seconds clip, output a figure and a JSON file This function works for rnn_model.py
@@ -274,12 +306,25 @@ def generate_figure_3DResNet_onehot(video_path, landmark_path, model_path, num_i
 if __name__ == '__main__':
     v_path = sys.argv[1]  # 'sample/no_jump.mp4'
     l_path = sys.argv[2]  # 'sample/no_jump'
-    # generate_figure_ensemble(video_path=v_path, landmark_path=l_path,
-    #                     model_path='gitignore/Final_submission/Ensemble_model_trainable_256B_relu_reg/Ensemble_model_trainable_256B_relu_reg_best.h5',
-    #                     num_image=32)
+
+
+    # # Submission1
+    # generate_figure(video_path=v_path, landmark_path=l_path,
+    #                          model_path='model/submission1/Dense128-32_GRU32_CNN16-32-32_GRU16_16batch_10image_50epoch_best.h5',
+    #                          num_image=10)
+
+    # # Submission2
+    # generate_figure_RNN(video_path=v_path, landmark_path=l_path,
+    #                          model_path='model/submission2/windowsize_COMP_TWO_STREAM_GRU_3layer512_25_20.5dropout_64batch_32image_100epoch_noHMDB_best.h5',
+    #                          num_image=32)
+
+    # # Submission3
+    # generate_figure_CNN(video_path=v_path, landmark_path=l_path,
+    #                          model_path='model/submission3/CNN_model_best.h5',
+    #                          num_image=32)
+
+    # Final_submission
     generate_figure_ensemble(video_path=v_path, landmark_path=l_path,
                              model_path='model/Final_submission/Ensemble_model_trainable_256B_relu_reg/Ensemble_model_trainable_256B_relu_reg_best.h5',
                              num_image=32)
-    # generate_figure_CNN(video_path=v_path, landmark_path=l_path,
-    #                                 model_path='gitignore/Final_submission/AUGM_CNN_0.5D_256B/AUGM_CNN_0.5D_256B_best.h5',
-    #                                 num_image=32)
+
