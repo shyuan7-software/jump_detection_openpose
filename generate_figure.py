@@ -4,7 +4,7 @@ import json
 import os
 from math import ceil
 
-from load_data import WeightedSum, get_spat_seq, get_temp_seq, get_dataset_diff_based_CNN
+from load_data import WeightedSum, get_spat_seq, get_temp_seq, get_dataset_diff_based_CNN, draw_skeleton_pic, rotate90
 from load_data import decode_json
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
@@ -64,8 +64,17 @@ def generate_clips_tracks(video_path, landmark_path, num_image):
                 sample_rate += 1
             if int(sample_rate * len(cur_clip)) <= i - int(clip_id * (frame_rate * 3)):
                 print(i)
-                cur_clip.append(image_per_frame[i])
-                cur_track.append(decode_json(landmark_per_frame[i]))
+                m, l = image_per_frame[i], np.array(decode_json(landmark_per_frame[i]))
+                # m = np.rot90(m, k=3)
+                # l = rotate90(l, k=3)
+                # s_m = draw_skeleton_pic(l)
+                # cv2.namedWindow("Image")
+                # cv2.imshow("Image", m)
+                # cv2.namedWindow("skeleton_Image")
+                # cv2.imshow("skeleton_Image", s_m)
+                # cv2.waitKey()
+                cur_clip.append(m)
+                cur_track.append(l)
             if len(cur_clip) == num_image: break
         while len(cur_clip) < num_image:
             cur_clip.append(empty_img)
@@ -78,7 +87,7 @@ def generate_clips_tracks(video_path, landmark_path, num_image):
 
 # Gievn the video path, landmark files' path, and model's path, number of frames you want to sample from each 3
 # seconds clip, output a figure and a JSON file This function works for rnn_model.py
-def generate_figure(video_path, landmark_path, model_path, num_image):
+def generate_figure_RNN(video_path, landmark_path, model_path, num_image):
     clips, tracks = generate_clips_tracks(video_path, landmark_path, num_image)
     (temp_seq_larm, temp_seq_rarm, temp_seq_trunk, temp_seq_lleg, temp_seq_rleg) = get_temp_seq(tracks, num_image)
     spat_seq = get_spat_seq(tracks, num_image)
@@ -97,9 +106,9 @@ def generate_figure(video_path, landmark_path, model_path, num_image):
     plt.tick_params(labelsize=6)
 
     for (x, y) in zip(X, Y):
-        plt.text(x, y + 0.01, str(round(y, 2)) + '%', fontsize=6)
+        plt.text(x, y + 0.01, str(round(y, 2)) + '', fontsize=6)
     plt.xlabel("Time(s)")
-    plt.ylabel("Possibility(%)")
+    plt.ylabel("Possibility")
     plt.title("Jump detection")
     plt.savefig('./output/' + videoname + '.png', dpi=300)
     plt.show()
@@ -133,9 +142,109 @@ def generate_figure_CNN(video_path, landmark_path, model_path, num_image):
     plt.tick_params(labelsize=6)
 
     for (x, y) in zip(X, Y):
-        plt.text(x, y + 0.01, str(round(y, 2)) + '%', fontsize=6)
+        plt.text(x, y + 0.01, str(round(y, 2)) + '', fontsize=6)
     plt.xlabel("Time(s)")
-    plt.ylabel("Possibility(%)")
+    plt.ylabel("Possibility")
+    plt.title("Jump detection")
+    plt.savefig('./output/' + videoname + '.png', dpi=300)
+    plt.show()
+    # json
+    temp_dict = {'jump': []}
+    for i in range(len(clips)):
+        temp_dict['jump'].append({str(X[i]) + 's to ' + str(X[i] + 3) + 's': str(Y[i])})
+    json_file = './output/' + videoname + '.json'
+    with open(json_file, 'w') as f:
+        json.dump(temp_dict, f)
+    print('The result is located in ./output/' + videoname + '.json and ./output/' + videoname + '.png')
+
+def generate_figure_ensemble(video_path, landmark_path, model_path, num_image):
+    clips, tracks = generate_clips_tracks(video_path, landmark_path, num_image)
+    (temp_seq_larm, temp_seq_rarm, temp_seq_trunk, temp_seq_lleg, temp_seq_rleg) = get_temp_seq(tracks, num_image)
+    spat_seq = get_spat_seq(tracks, num_image)
+    coords, motions = get_dataset_diff_based_CNN(tracks, num_image)
+    if 'output' not in os.listdir('./'):
+        os.mkdir('output')
+    print(clips.shape, tracks.shape)
+    videoname = video_path.split("/")[-1]
+    model = load_model(model_path, custom_objects={"WeightedSum": WeightedSum})
+    predictions = model.predict([coords, motions, temp_seq_larm, temp_seq_rarm, temp_seq_trunk, temp_seq_lleg, temp_seq_rleg, spat_seq])
+    Y = []
+    for (i, p) in enumerate(predictions):
+        Y.append(p[0])
+    X = [3 * x for x in range(0, len(clips))]
+    fig = plt.figure()
+    plt.bar(X, Y, 3, align='edge', ec='c', ls='-.', lw=1, color='#EECFA1', tick_label=X)
+    plt.tick_params(labelsize=6)
+
+    for (x, y) in zip(X, Y):
+        plt.text(x, y + 0.01, str(round(y, 2)), fontsize=6)
+    plt.xlabel("Time(s)")
+    plt.ylabel("Possibility")
+    plt.title("Jump detection")
+    plt.savefig('./output/' + videoname + '.png', dpi=300)
+    plt.show()
+    # json
+    temp_dict = {'jump': []}
+    for i in range(len(clips)):
+        temp_dict['jump'].append({str(X[i]) + 's to ' + str(X[i] + 3) + 's': str(Y[i])})
+    json_file = './output/' + videoname + '.json'
+    with open(json_file, 'w') as f:
+        json.dump(temp_dict, f)
+    print('The result is located in ./output/' + videoname + '.json and ./output/' + videoname + '.png')
+
+# Gievn the video path, landmark files' path, and model's path, number of frames you want to sample from each 3
+# seconds clip, output a figure and a JSON file This function works for rnn_model.py
+def generate_figure_3DResNet(video_path, landmark_path, model_path, num_image):
+    clips, tracks = generate_clips_tracks(video_path, landmark_path, num_image)
+    if 'output' not in os.listdir('./'):
+        os.mkdir('output')
+    print(clips.shape, tracks.shape)
+    videoname = video_path.split("/")[-1]
+    model = load_model(model_path)
+    predictions = model.predict([clips])
+    Y = []
+    for (i, p) in enumerate(predictions):
+        Y.append(p[0])
+    X = [3 * x for x in range(0, len(clips))]
+    fig = plt.figure()
+    plt.bar(X, Y, 3, align='edge', ec='c', ls='-.', lw=1, color='#EECFA1', tick_label=X)
+    plt.tick_params(labelsize=6)
+    for (x, y) in zip(X, Y):
+        plt.text(x, y + 0.01, str(round(y, 2)) + '', fontsize=6)
+    plt.xlabel("Time(s)")
+    plt.ylabel("Possibility")
+    plt.title("Jump detection")
+    plt.savefig('./output/' + videoname + '.png', dpi=300)
+    plt.show()
+    # json
+    temp_dict = {'jump': []}
+    for i in range(len(clips)):
+        temp_dict['jump'].append({str(X[i]) + 's to ' + str(X[i] + 3) + 's': str(Y[i])})
+    json_file = './output/' + videoname + '.json'
+    with open(json_file, 'w') as f:
+        json.dump(temp_dict, f)
+    print('The result is located in ./output/' + videoname + '.json and ./output/' + videoname + '.png')
+
+
+def generate_figure_3DResNet_onehot(video_path, landmark_path, model_path, num_image):
+    clips, tracks = generate_clips_tracks(video_path, landmark_path, num_image)
+    if 'output' not in os.listdir('./'):
+        os.mkdir('output')
+    print(clips.shape, tracks.shape)
+    videoname = video_path.split("/")[-1]
+    model = load_model(model_path)
+    predictions = model.predict([clips])
+    Y = []
+    for (i, p) in enumerate(predictions):
+        Y.append(p[1])
+    X = [3 * x for x in range(0, len(clips))]
+    fig = plt.figure()
+    plt.bar(X, Y, 3, align='edge', ec='c', ls='-.', lw=1, color='#EECFA1', tick_label=X)
+    plt.tick_params(labelsize=6)
+    for (x, y) in zip(X, Y):
+        plt.text(x, y + 0.01, str(round(y, 2)) + '', fontsize=6)
+    plt.xlabel("Time(s)")
+    plt.ylabel("Possibility")
     plt.title("Jump detection")
     plt.savefig('./output/' + videoname + '.png', dpi=300)
     plt.show()
@@ -157,6 +266,12 @@ def generate_figure_CNN(video_path, landmark_path, model_path, num_image):
 if __name__ == '__main__':
     v_path = sys.argv[1]  # 'sample/no_jump.mp4'
     l_path = sys.argv[2]  # 'sample/no_jump'
-    generate_figure_CNN(video_path=v_path, landmark_path=l_path,
-                        model_path='model/submission3/CNN_model_best.h5',
+    # generate_figure_ensemble(video_path=v_path, landmark_path=l_path,
+    #                     model_path='gitignore/Final_submission/Ensemble_model_trainable_256B_relu_reg/Ensemble_model_trainable_256B_relu_reg_best.h5',
+    #                     num_image=32)
+    generate_figure_ensemble(video_path=v_path, landmark_path=l_path,
+                        model_path='model/Final_submission/Ensemble_model_trainable_256B_relu_reg/Ensemble_model_trainable_256B_relu_reg_best.h5',
                         num_image=32)
+    # generate_figure_CNN(video_path=v_path, landmark_path=l_path,
+    #                                 model_path='gitignore/Final_submission/AUGM_CNN_0.5D_256B/AUGM_CNN_0.5D_256B_best.h5',
+    #                                 num_image=32)

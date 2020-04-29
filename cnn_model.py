@@ -11,16 +11,16 @@ from keras.utils import plot_model
 from load_data import get_dataset_diff_based_CNN
 import os
 
-os.environ["PATH"] += os.pathsep + 'C:/Program Files (x86)/Graphviz2.38/bin/'
+# os.environ["PATH"] += os.pathsep + 'C:/Program Files (x86)/Graphviz2.38/bin/'
 
 plt.switch_backend("agg")
 path = "model/"
-dataset_path = "gitignore/npy/32image_noHMDB_noEmptyFrame/"
+dataset_path = "gitignore/npy/Final_dataset_npy/"
 num_image = 32
 
 
 # Load dataset through loading .npy files, much faster than loading original video and body landmark files
-def load_np_data():
+def load_np_data(dataset_path):
     train_tracks = np.load(dataset_path + "/train_tracks.npy")
     train_lables = np.load(dataset_path + "/train_lables.npy")
 
@@ -34,7 +34,7 @@ def load_np_data():
 
 # 0. prepare for data
 
-(train_tracks, train_labels), (valid_tracks, valid_labels), (test_tracks, test_labels) = load_np_data()
+(train_tracks, train_labels), (valid_tracks, valid_labels), (test_tracks, test_labels) = load_np_data(dataset_path)
 print('Train:', train_tracks.shape, train_labels.shape)
 print('Valid:', valid_tracks.shape, valid_labels.shape)
 print('Test:', test_tracks.shape, test_labels.shape)
@@ -110,7 +110,7 @@ model.compile(optimizer='rmsprop',
 os.mkdir(path + model_name)
 path += model_name + '/'
 print(path)
-plot_model(model, show_shapes=True, to_file=path + model_name + '_model.png')
+# plot_model(model, show_shapes=True, to_file=path + model_name + '_model.png')
 # 3. train network with saving the best model
 callbacks_list = [
     keras.callbacks.ModelCheckpoint(

@@ -65,3 +65,11 @@ Main tasks:
 Bonus points:   
 &#8195;Add videos of old people jumping/not jumping to the dataset;   
 &#8195;Add more sample videos;   
+
+## Improvement of submission-final:
+1. Expanded the dataset, by filming myself jumping
+2. Implemented data augmentation, by rotating videos 90, 180, 270 degrees
+3. Implemented 3D ResNet model  
+4. Tried to use 2D CNN model to classify images of jumping and standing
+5. Tried to include temporal CNN layer into the model
+6. Used ensemble learning technique to combine the previsou two models, and got a best model which has 97% accuracy

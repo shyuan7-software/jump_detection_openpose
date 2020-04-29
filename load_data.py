@@ -2,15 +2,19 @@
 # Email: shyuan@tamu.edu
 
 import json as js
+import math
 import os
 import random
 import cv2
 import numpy as np
 from keras.engine import Layer
 
-
 # video_path- "dataset/landmarks/test/jump/jump1.mp4/jump1_000000000000_keypoints.json"
 # Function: decode a landmark json file
+from keras.utils import to_categorical
+from sklearn.linear_model import LogisticRegression
+
+
 def decode_json(path):
     with open(path, 'r') as jsonfile:
         json_dict = js.load(jsonfile)
@@ -118,8 +122,8 @@ def load_videos_tracks(videos_dir, landmark_dir, num_image):
     labels = []
     for file in dirs:
         print(videos_dir + file)
-        # video, res1 = video_to_imgaes(videos_dir + file, num_image)
-        video, res1 = [], True
+        video, res1 = video_to_imgaes(videos_dir + file, num_image)
+        # video, res1 = [], True
         body_track, res2 = video_to_landmarks(landmark_dir + file, num_image)
         if not res1 or not res2:
             continue
@@ -180,9 +184,9 @@ def load_dataset(video_dir, landmark_dir, num_image):
     train_video_dir, train_landmark_dir = video_dir + "train/", landmark_dir + "train/"
     valid_video_dir, valid_landmark_dir = video_dir + "valid/", landmark_dir + "valid/"
     test_video_dir, test_landmark_dir = video_dir + "test/", landmark_dir + "test/"
-    train_videos, train_tracks, train_lables = load_all_videos(train_video_dir, train_landmark_dir, num_image)
     valid_videos, valid_tracks, valid_lables = load_all_videos(valid_video_dir, valid_landmark_dir, num_image)
     test_videos, test_tracks, test_lables = load_all_videos(test_video_dir, test_landmark_dir, num_image)
+    train_videos, train_tracks, train_lables = load_all_videos(train_video_dir, train_landmark_dir, num_image)
 
     return ((train_videos, train_tracks, train_lables),
             (valid_videos, valid_tracks, valid_lables),
@@ -204,28 +208,6 @@ print(test_lables.shape)
 '''
 
 
-'''
-(train_videos, train_tracks, train_lables), (valid_videos, valid_tracks, valid_lables), (
-    test_videos, test_tracks, test_lables) \
-    = load_dataset(video_dir="gitignore/dataset_noHMDB/clips/", landmark_dir="gitignore/dataset_noHMDB/landmarks/",
-                   num_image=16)
-
-np.save("gitignore/npy/16image_noHMDB_noEmptyFrame/train_videos", train_videos)
-np.save("gitignore/npy/16image_noHMDB_noEmptyFrame/train_tracks", train_tracks)
-np.save("gitignore/npy/16image_noHMDB_noEmptyFrame/train_lables", train_lables)
-print(train_videos.shape, train_tracks.shape, train_lables.shape)
-
-np.save("gitignore/npy/16image_noHMDB_noEmptyFrame/valid_videos", valid_videos)
-np.save("gitignore/npy/16image_noHMDB_noEmptyFrame/valid_tracks", valid_tracks)
-np.save("gitignore/npy/16image_noHMDB_noEmptyFrame/valid_lables", valid_lables)
-print(valid_videos.shape, valid_tracks.shape, valid_lables.shape)
-
-np.save("gitignore/npy/16image_noHMDB_noEmptyFrame/test_videos", test_videos)
-np.save("gitignore/npy/16image_noHMDB_noEmptyFrame/test_tracks", test_tracks)
-np.save("gitignore/npy/16image_noHMDB_noEmptyFrame/test_lables", test_lables)
-print(test_videos.shape, test_tracks.shape, test_lables.shape)
-
-'''
 
 # Transfering body landmarks to a temporal sequence, which is described in https://arxiv.org/abs/1704.02581
 def get_temp_seq_part(tracks, part_indexs, num_image):
@@ -248,6 +230,7 @@ def get_temp_seq_part(tracks, part_indexs, num_image):
     temp_seq_part = temp_seq_part.reshape(len(tracks), num_image, len(part_indexs) * 2)
     return temp_seq_part
 
+
 # Transfering body landmarks to temporal sequences, which is described in https://arxiv.org/abs/1704.02581
 def get_temp_seq(tracks, num_image):
     # part_indexs:
@@ -266,6 +249,7 @@ def get_temp_seq(tracks, num_image):
             temp_seq_trunk,
             temp_seq_lleg,
             temp_seq_rleg)
+
 
 # Transfering body landmarks to a spatial sequence, which is described in https://arxiv.org/abs/1704.02581
 def get_spat_seq(tracks, num_image):
@@ -299,6 +283,7 @@ def get_spat_seq(tracks, num_image):
     spat_seq = spat_seq.reshape(len(tracks), len(chain_seq), window_size * 2)
     return spat_seq
 
+
 # A customized layer for fusing temporal stream and spatial stream, which is described in https://arxiv.org/abs/1704.02581
 class WeightedSum(Layer):
     def __init__(self, a, **kwargs):
@@ -315,6 +300,7 @@ class WeightedSum(Layer):
         config = {'a': self.a}
         base_config = super(WeightedSum, self).get_config()
         return dict(list(base_config.items()) + list(config.items()))
+
 
 # Generate a number of optical flow frames for a video
 # If generated successfully, return a list of optial flow frames and True
@@ -474,6 +460,19 @@ def load_dataset_CNN(video_dir, num_image):
 # np.save("gitignore/npy/10imgae_noHMDB_cnn/test_lables", test_lables)
 # print(test_flows.shape, test_frames.shape, test_lables.shape)
 
+
+# Rotate skeleton image:
+def rotate90(landmark, k):
+    new_landmark = []
+    x0, y0 = 0.5, 0.5  # the center of image
+    for i in range(25):
+        x1, y1, c1 = landmark[i, 0], landmark[i, 1], landmark[i, 2]
+        x2 = math.cos(k*(-math.pi / 2)) * (x1 - x0) - math.sin(k*(-math.pi / 2)) * (y1 - y0) + x0
+        y2 = math.sin(k*(-math.pi / 2)) * (x1 - x0) + math.cos(k*(-math.pi / 2)) * (y1 - y0) + y0
+        new_landmark.append([x2, y2, c1])
+    return np.array(new_landmark)
+
+
 # Draw the picture of human body, based on body landmark
 def draw_skeleton_pic(landmark, scale=224):
     colors = [(0, 255, 0), (0, 0, 255), (255, 0, 0)]
@@ -496,6 +495,7 @@ def draw_skeleton_pic(landmark, scale=224):
     # cv2.waitKey(0)
     # print(type(canvas))
     return canvas
+
 
 # Draw human body of all frames on a convas, based on body landmarks
 def draw_ST_skeleton_pic(video, scale=224):
@@ -531,6 +531,7 @@ def tracks_to_videos(tracks, num_image):
             video.append(frame)
         videos.append(video)
     return np.array(videos)
+
 
 # Transfering body landmarks dataset to the dataset that contains the image drawed based on body landmarks
 def tracks_to_STimages(tracks):
@@ -573,19 +574,20 @@ def tracks_to_STimages(tracks):
 #             cv2.imshow('.',videos[i,j])
 #             cv2.waitKey(0)
 
-dataset_path = "gitignore/npy/32image_noHMDB_noEmptyFrame/"
-num_image = 32
+# dataset_path = "gitignore/npy/32image_noHMDB/"
+# num_image = 32
+
 
 # Load dataset through loading .npy files, much faster than loading original video and body landmark files
-def load_np_data():
-    train_tracks = np.load(dataset_path + "/train_tracks.npy")
-    train_lables = np.load(dataset_path + "/train_lables.npy")
+def load_np_data(path):
+    train_tracks = np.load(path + "/train_tracks.npy")
+    train_lables = np.load(path + "/train_lables.npy")
 
-    valid_tracks = np.load(dataset_path + "/valid_tracks.npy")
-    valid_lables = np.load(dataset_path + "/valid_lables.npy")
+    valid_tracks = np.load(path + "/valid_tracks.npy")
+    valid_lables = np.load(path + "/valid_lables.npy")
 
-    test_tracks = np.load(dataset_path + "/test_tracks.npy")
-    test_lables = np.load(dataset_path + "/test_lables.npy")
+    test_tracks = np.load(path + "/test_tracks.npy")
+    test_lables = np.load(path + "/test_lables.npy")
     return (train_tracks, train_lables), (valid_tracks, valid_lables), (test_tracks, test_lables)
 
 
@@ -607,6 +609,7 @@ def get_diff(prv_landmark, cur_landmark):
             diff.append([dx, dy])
     return np.array(diff)
 
+
 # Get Cartesian Coordinates, based on body landmark, used in the model of
 # https://arxiv.org/pdf/1704.07595.pdf
 def get_cart_coord(landmark):
@@ -615,6 +618,7 @@ def get_cart_coord(landmark):
         x, y, c = landmark[i]
         cart_coord.append([x, y])
     return np.array(cart_coord)
+
 
 # Transfering original body landmark dataset, to the dataset that can be used in the model of
 # https://arxiv.org/pdf/1704.07595.pdf
@@ -633,7 +637,6 @@ def get_dataset_diff_based_CNN(tracks, num_image):
         coords.append(coord)
     return np.array(coords), np.array(motions)
 
-
 # train_coords, train_motions = get_dataset_diff_based_CNN(train_tracks, num_image)
 # np.save(dataset_path + 'train_coords', train_coords)
 # np.save(dataset_path + 'train_motions', train_motions)
@@ -648,3 +651,130 @@ def get_dataset_diff_based_CNN(tracks, num_image):
 # np.save(dataset_path + 'test_coords', test_coords)
 # np.save(dataset_path + 'test_motions', test_motions)
 # print(test_coords.shape, test_motions.shape)
+
+
+# (train_tracks, train_labels), (valid_tracks, valid_labels), (test_tracks, test_labels) = load_np_data()
+# print(train_tracks.shape)
+# old_labels = test_labels
+# new_labels = to_categorical(old_labels)
+# for i in range(len(new_labels)):
+#     print(old_labels[i], new_labels[i])
+
+
+def label_aug(label):
+    return [label, label, label, label]
+
+
+def track_aug(track):
+    rotated_tracks = [track]
+    for k in [1, 2, 3]:
+        new_track = []
+        for frame_id in range(len(track)):
+            new_track.append(rotate90(track[frame_id], k=k))
+        rotated_tracks.append(new_track)
+    return rotated_tracks
+
+
+def video_aug(video):
+    rotated_videos = [video]
+    for k in [1,2,3]:
+        new_video = []
+        for frame_id in range(len(video)):
+            new_video.append(np.rot90(video[frame_id], k=k))
+        rotated_videos.append(new_video)
+    return rotated_videos
+
+# Data Augmentation by rotating images 90, 180, 270. Therefore, the original dataset will be increased to 4 times larger than before
+def data_aug(videos, tracks, labels):
+    size = len(tracks)
+    new_videos = []
+    new_tracks = []
+    new_labels = []
+    for i in range(size):
+        new_videos.extend(video_aug(videos[i]))
+        new_tracks.extend(track_aug(tracks[i]))
+        new_labels.extend(label_aug(labels[i]))
+    new_videos = np.array(new_videos)
+    new_tracks = np.array(new_tracks)
+    new_labels = np.array(new_labels)
+    index = [i for i in range(len(new_videos))]
+    random.shuffle(index)
+    new_videos = new_videos[index]
+    new_tracks = new_tracks[index]
+    new_labels = new_labels[index]
+    return new_videos, new_tracks, new_labels
+
+
+# (train_tracks, train_labels), (valid_tracks, valid_labels), (test_tracks, test_labels) = load_np_data(dataset_path)
+# test_videos = np.load(dataset_path+'/test_videos.npy')
+# print(test_tracks.shape)
+# test_videos, test_tracks, test_labels = data_aug(test_videos, test_tracks, test_labels)
+# print(test_tracks.shape)、
+
+# Load one type of images, like jump or others
+def load_one_type_imgs(imgs_dir):
+    files = os.listdir(imgs_dir)
+    imgs = []
+    for file in files:
+        img = cv2.imread(imgs_dir+'/'+file)
+        img = cv2.resize(img, (224, 224), interpolation=cv2.INTER_AREA)
+        # cv2.imshow("image", img)
+        # cv2.waitKey(0)
+        imgs.append(img)
+    return imgs
+
+# Load one type of dataset, like train, valid, or test
+def load_imgs(path):
+    imgs = []
+    labels = []
+    jump_imgs = load_one_type_imgs(path+'/jump/')
+    jump_lbes = [1] * len(jump_imgs)
+    others_imgs = load_one_type_imgs(path + '/others/')
+    others_lbes = [0] * len(others_imgs)
+    imgs.extend(jump_imgs)
+    imgs.extend(others_imgs)
+    labels.extend(jump_lbes)
+    labels.extend(others_lbes)
+    imgs=np.array(imgs)
+    labels = np.array(labels)
+    index = [i for i in range(len(labels))]
+    random.shuffle(index)
+    imgs = imgs[index]
+    labels = labels[index]
+    return imgs, labels
+
+
+# Load all img dataset
+def load_img_dataset(path):
+    train_imgs, train_labels = load_imgs(path+'/train/')
+    valid_imgs, valid_labels = load_imgs(path + '/valid/')
+    test_imgs, test_labels = load_imgs(path + '/test/')
+    return train_imgs, train_labels,valid_imgs, valid_labels, test_imgs, test_labels
+
+if __name__ == '__main__':
+    # (train_videos, train_tracks, train_lables), (valid_videos, valid_tracks, valid_lables), (
+    #     test_videos, test_tracks, test_lables) \
+    #     = load_dataset(video_dir="gitignore/Final_dataset/clips/", landmark_dir="gitignore/Final_dataset/landmarks/",
+    #                    num_image=32)
+    #
+    # np.save("gitignore/npy/Final_dataset_npy/train_videos", train_videos)
+    # np.save("gitignore/npy/Final_dataset_npy/train_tracks", train_tracks)
+    # np.save("gitignore/npy/Final_dataset_npy/train_lables", train_lables)
+    # print(train_videos.shape, train_tracks.shape, train_lables.shape)
+    #
+    # np.save("gitignore/npy/Final_dataset_npy/valid_videos", valid_videos)
+    # np.save("gitignore/npy/Final_dataset_npy/valid_tracks", valid_tracks)
+    # np.save("gitignore/npy/Final_dataset_npy/valid_lables", valid_lables)
+    # print(valid_videos.shape, valid_tracks.shape, valid_lables.shape)
+    #
+    # np.save("gitignore/npy/Final_dataset_npy/test_videos", test_videos)
+    # np.save("gitignore/npy/Final_dataset_npy/test_tracks", test_tracks)
+    # np.save("gitignore/npy/Final_dataset_npy/test_lables", test_lables)
+    # print(test_videos.shape, test_tracks.shape, test_lables.shape)
+    '''
+    train_videos = np.load("gitignore/npy/Final_dataset_npy/train_videos.npy")
+    train_labels = np.load("gitignore/npy/Final_dataset_npy/train_lables.npy")
+    train_tracks = np.load("gitignore/npy/Final_dataset_npy/train_tracks.npy")'''
+
+
+
