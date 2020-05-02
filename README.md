@@ -38,7 +38,7 @@ a video, and a directory that stores landmark files. This file will output a jso
 ## Directory:
 ### 1. ./model/:
 This directory stores the trained models.    
-Under this directory, model/submission2/windowsize_COMP_TWO_STREAM_GRU_3layer512_25_20.5dropout_64batch_32image_100epoch_noHMDB_best.h5 file is the best trained model I can get.
+Under this directory, "model/Final_submission/Ensemble_model_trainable_256B_relu_reg/Ensemble_model_trainable_256B_relu_reg_best.h5" file is the best trained model I can get.
 
 
 ### 2. ./sample/ (not in github):
