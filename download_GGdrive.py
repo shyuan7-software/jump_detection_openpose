@@ -51,7 +51,19 @@ def download_video(video_name):
                      'random.mp4': '1iMfd4vEtu2BU5KXsv1YKYVP6hWYQgYYi',
                      'raw_video.mp4': '1f2V6B0c5tZeX-jV9tESyZlPKiE8Eqp12',
                      'side_full_power.mp4': '1EFB3shNa1YNJEC492U818aZE6YSe8n4b',
-                     'side_small_power.mp4': '1wPcAqbgs7hZnMN1QF5D2Y1y13svJivO1'
+                     'side_small_power.mp4': '1wPcAqbgs7hZnMN1QF5D2Y1y13svJivO1',
+                     '3600_2.mkv':'1vG3iofKLCLPaMY231Ow_ANSzTyS4o7MI',
+                     '3700_1.mkv':'1nL1Sy0NrLk_qxfcJ-mcnUc6xk1ybHdYt',
+                     '3800_3.mkv':'1aMEsNW4t1X4TP3Ikj9lCjIuuOP4WN1jQ',
+                     '3900_2.mkv':'12JVsOuyQxureJqMxPOy_sJSjVYbJ5veH',
+                     '4000_1.mkv':'1ErcaVkec4jvXiIwQKhmmA-SPMM26n1EB',
+                     '4000_2.mkv':'1cjrdLz9zjRbfPd43m-8uEs4t4WcYSHu0',
+                     '4000_3.mkv':'1UIVO_IKa9n6MSwNieAigf3ZapqmUSMuh',
+                     '4000_4.mkv':'1k6O7sORO7MR-i6ZeCcxcy7zDaEj5Z0f7',
+                     '4100_1.mkv':'1OrPypJrySicR7Ymnw6-dU8y2sc4jjspD',
+                     '4200_3.mkv':'1tMdyT32bQwqEW-GcIHJyk7OasEWW0YMa',
+                     '4300_3.mkv':'1nryMkBcFd8yrjDyZ8dTM7pQHrhrlApxB',
+                     '4400_1.mkv':'1GkJMJLg1Sxqh3w9aix5gCH4m4_9z56kn'
                      }
     gdd.download_file_from_google_drive(file_id=name2id_video[video_name],
                                         dest_path='./' + video_name,
@@ -72,7 +84,19 @@ def download_landmarks(landmark_name):
                         'random': '16DdzFdLgBtOT5Op7_PYosgx5aRTIJDjJ',
                         'raw_video': '10t-MVogQfDks-xvxw6au8ocHYe9aUAdq',
                         'side_full_power': '1a9HgvOBqx5eQzKu-szqxxFCxzWgKLmgT',
-                        'side_small_power': '1k7Jo7EQUleGUTDEaehdjwtpFwm0PdV0J'
+                        'side_small_power': '1k7Jo7EQUleGUTDEaehdjwtpFwm0PdV0J',
+                        '3600_2': '1FcjpvvJKRd2SAPTblmpPQ6_HMHkZmZay',
+                        '3700_1': '19UDo2gi4GaoxY5cCo3b1Hn6cOngYTGmV',
+                        '3800_3': '1VEVzxWMT_GIY4MyiifXRkzJx8kYooDg4',
+                        '3900_2': '1NkUgTNJZOA6rVCNYa_QcKHhqiMYotytF',
+                        '4000_1': '10jXtwUt7Q8z1Ox2hdblYC9tSa3H615At',
+                        '4000_2': '1rEsthHdpDeNugechNvsHytBxZdN02AdV',
+                        '4000_3': '1I-1REbTWSfM-7Xea0tf9IjGcTezOPHUF',
+                        '4000_4': '1FS__iZ1JalzC3LL0HNw5TFXNgEenYBNW',
+                        '4100_1': '1dS879WAyO1QmEQSNBhLuSs3M0HwuJRHy',
+                        '4200_3': '1u5p-cYZUZNXVJXWfBvmPZf3Jm3sxswSi',
+                        '4300_3': '14X131qctCHbEeUzhtPuOgLL97yo-kgXN',
+                        '4400_1': '10gxUkIcZ2HW-TO_avaMrAsZ4FWJGvMSs'
                         }
     gdd.download_file_from_google_drive(file_id=name2id_landmark[landmark_name],
                                         dest_path='./' + landmark_name + '.zip',

@@ -136,13 +136,14 @@ def generate_figure_RNN(video_path, landmark_path, model_path, num_image):
     fig = plt.figure()
     plt.bar(X, Y, 3, align='edge', ec='c', ls='-.', lw=1, color='#EECFA1', tick_label=X)
     plt.tick_params(labelsize=6)
-
+    plt.ylim(0, 1)
     for (x, y) in zip(X, Y):
         plt.text(x, y + 0.01, str(round(y, 2)) + '', fontsize=6)
     plt.xlabel("Time(s)")
     plt.ylabel("Possibility")
     plt.title("Jump detection")
     videoname += UIN
+    videoname += '-Part6'
     plt.savefig('./OUTPUT/' + videoname + '.png', dpi=300)
     plt.show()
     # json
@@ -173,13 +174,14 @@ def generate_figure_CNN(video_path, landmark_path, model_path, num_image):
     fig = plt.figure()
     plt.bar(X, Y, 3, align='edge', ec='c', ls='-.', lw=1, color='#EECFA1', tick_label=X)
     plt.tick_params(labelsize=6)
-
+    plt.ylim(0, 1)
     for (x, y) in zip(X, Y):
         plt.text(x, y + 0.01, str(round(y, 2)) + '', fontsize=6)
     plt.xlabel("Time(s)")
     plt.ylabel("Possibility")
     plt.title("Jump detection")
     videoname += UIN
+    videoname += '-Part7'
     plt.savefig('./OUTPUT/' + videoname + '.png', dpi=300)
     plt.show()
     # json
@@ -211,6 +213,7 @@ def generate_figure_ensemble(video_path, landmark_path, model_path, num_image):
     fig = plt.figure()
     plt.bar(X, Y, 3, align='edge', ec='c', ls='-.', lw=1, color='#EECFA1', tick_label=X)
     plt.tick_params(labelsize=6)
+    plt.ylim(0, 1)
 
     for (x, y) in zip(X, Y):
         plt.text(x, y + 0.01, str(round(y, 2)), fontsize=6)
@@ -218,6 +221,7 @@ def generate_figure_ensemble(video_path, landmark_path, model_path, num_image):
     plt.ylabel("Possibility")
     plt.title("Jump detection")
     videoname += UIN
+    videoname += '-Part8'
     plt.savefig('./OUTPUT/' + videoname + '.png', dpi=300)
     plt.show()
     # json
